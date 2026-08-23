@@ -1,0 +1,92 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    --color-bg-mesh: radial-gradient(at 10% 20%, #ffe853 0px, transparent 50%),
+                     radial-gradient(at 90% 10%, #ffd028 0px, transparent 50%),
+                     radial-gradient(at 50% 10%, #d8f5fc 0px, transparent 40%),
+                     radial-gradient(at 80% 80%, #ffd43f 0px, transparent 50%),
+                     radial-gradient(at 20% 80%, #fff078 0px, transparent 50%),
+                     #ffd84d;
+    --color-text: #1A1A1A;
+    --color-text-muted: #555555;
+  }
+}
+
+body {
+  background: var(--color-bg-mesh);
+  background-attachment: fixed;
+  color: var(--color-text);
+  font-family: var(--font-geist-sans), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  min-height: 100vh;
+}
+
+/* CALL-E Frosted Glass Card */
+.calle-glass-card {
+  background: rgba(255, 255, 255, 0.72);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.07);
+}
+
+.calle-glass-card-subtle {
+  background: rgba(255, 255, 255, 0.5);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.6);
+}
+
+/* CALL-E Signature Multi-color Gradient Underline */
+.calle-rainbow-line {
+  background-image: linear-gradient(90deg, #EBECDC 15%, #A6E9F9 45%, #9AFFA9 75%, #439CF5 100%);
+  background-position: bottom left;
+  background-repeat: no-repeat;
+  background-size: 100% 4px;
+}
+
+/* CALL-E Buttons */
+.calle-btn-black {
+  background-color: #1A1A1A;
+  color: #FFFFFF;
+  font-family: var(--font-geist-mono), monospace;
+  font-weight: 700;
+  border-radius: 12px;
+  transition: all 0.15s cubic-bezier(0.2, 0.8, 0.2, 1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.calle-btn-black:hover {
+  background-color: #000000;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
+}
+
+.calle-btn-white {
+  background-color: #FFFFFF;
+  color: #1A1A1A;
+  font-family: var(--font-geist-mono), monospace;
+  font-weight: 700;
+  border-radius: 12px;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  transition: all 0.15s cubic-bezier(0.2, 0.8, 0.2, 1);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+}
+
+.calle-btn-white:hover {
+  background-color: #F8F8F4;
+  border-color: rgba(0, 0, 0, 0.15);
+  transform: translateY(-1px);
+}
+
+/* Audio Waveform Animations */
+@keyframes wave-bar {
+  0%, 100% { height: 4px; }
+  50% { height: 22px; }
+}
+
+.wave-bar-1 { animation: wave-bar 1.2s infinite ease-in-out; }
+.wave-bar-2 { animation: wave-bar 0.9s infinite ease-in-out 0.2s; }
+.wave-bar-3 { animation: wave-bar 1.4s infinite ease-in-out 0.4s; }
+.wave-bar-4 { animation: wave-bar 0.8s infinite ease-in-out 0.1s; }
+.wave-bar-5 { animation: wave-bar 1.1s infinite ease-in-out 0.3s; }
