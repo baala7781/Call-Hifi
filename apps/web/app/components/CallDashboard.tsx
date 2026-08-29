@@ -76,9 +76,9 @@ export const CallDashboard: React.FC<CallDashboardProps> = ({
           </div>
 
           <div className="text-right">
-            <div className="text-xs text-[#1E1E1E]/70 font-mono font-medium">Verification Status</div>
+            <div className="text-xs text-[#1E1E1E]/70 font-mono font-medium">Hotel Verification</div>
             <div className="text-xl font-black font-mono text-[#1E1E1E]">
-              {completedCount} / {totalCalls || 1} Verified
+              {completedCount} / {calls.length || totalCalls || 1} Complete
             </div>
           </div>
         </div>
@@ -168,7 +168,10 @@ export const CallDashboard: React.FC<CallDashboardProps> = ({
                       {isCalling ? "Live on Phone..." : isCompleted ? "Offer Verified" : "Queued"}
                     </span>
 
-                    <button className="text-slate-600 hover:text-black transition-colors p-1">
+                    <button
+                      onClick={(e) => { e.stopPropagation(); toggleExpand(call.id); }}
+                      className="text-slate-600 hover:text-black transition-colors p-1 cursor-pointer"
+                    >
                       {isExpanded ? (
                         <ChevronUp className="w-4 h-4" />
                       ) : (

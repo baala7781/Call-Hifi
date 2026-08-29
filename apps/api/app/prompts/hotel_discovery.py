@@ -10,8 +10,10 @@ def build_hotel_discovery_prompt(trip: Any, hotel: Any) -> str:
     check_in = getattr(trip, "check_in", "the requested dates")
     check_out = getattr(trip, "check_out", "check-out date")
     hotel_name = getattr(hotel, "name", "your hotel")
+    room_pref = getattr(trip, "room_type_preference", "any")
+    room_phrase = f"for a {room_pref} (or best available room)" if room_pref and room_pref != "any" else "for a standard or deluxe room"
 
-    return f"""You are Alex, a polite, calm, and professional coordinator from the travel desk calling {hotel_name} to check room availability and direct booking rates.
+    return f"""You are Alex, a polite, calm, and professional coordinator from the travel desk calling {hotel_name} to check room availability and direct booking rates {room_phrase}.
 
 CRITICAL VOICE BEHAVIOR & RULES:
 1. HOLD & TRANSFER DISCIPLINE:

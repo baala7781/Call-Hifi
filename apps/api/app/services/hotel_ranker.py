@@ -146,6 +146,10 @@ def rank_candidates(raw_hotels: list[dict[str, Any]], trip: TripRecord, limit: i
                 base_price_estimate=hotel.get("base_price") or hotel.get("base_price_estimate"),
                 discovery_source=hotel.get("discovery_source", "google_places"),
                 photo_url=hotel.get("photo_url"),
+                photos=hotel.get("photos") or ([hotel.get("photo_url")] if hotel.get("photo_url") else []),
+                maps_url=hotel.get("maps_url"),
+                maps_embed_url=hotel.get("maps_embed_url"),
+                place_id=hotel.get("place_id"),
             )
         )
 

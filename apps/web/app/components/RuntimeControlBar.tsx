@@ -77,13 +77,14 @@ export const RuntimeControlBar: React.FC<RuntimeControlBarProps> = ({ onSettings
             <span className="text-white/70">Mode:</span>
             <button
               onClick={() => saveSettings({ demo_mode: !settings.demo_mode })}
-              className={`px-2.5 py-0.5 rounded-lg font-bold transition-all cursor-pointer ${
+              className={`px-2.5 py-0.5 rounded-lg font-bold transition-all cursor-pointer text-[11px] flex items-center gap-1.5 ${
                 settings.demo_mode
                   ? "bg-[#FED800] text-black shadow-xs"
                   : "bg-emerald-500 text-white shadow-xs"
               }`}
             >
-              {settings.demo_mode ? "DEMO MODE (Test Phone)" : "PRODUCTION (Real Hotels)"}
+              <span className={`w-2 h-2 rounded-full ${settings.demo_mode ? "bg-black animate-pulse" : "bg-white animate-pulse"}`} />
+              {settings.demo_mode ? "MODE ● DEMO" : "MODE ● LIVE CALL"}
             </button>
           </div>
 

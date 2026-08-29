@@ -19,7 +19,7 @@ calle_service = CalleService()
 
 
 async def run_call_workflow(trip_id: str) -> None:
-    """Async background worker orchestrating hotel phone calls."""
+    """Async background worker orchestrating hotel phone calls with real-time incremental offer updates."""
     from app.services.calle_service import get_voice_provider
     active_prov = get_voice_provider()
     
@@ -32,33 +32,51 @@ async def run_call_workflow(trip_id: str) -> None:
 
     logger.info(f"🎙️ [CALL WORKFLOW START] Trip {trip_id} | Provider: {active_prov.provider_name.upper()}")
 
-    # Call only 1 hotel for demo mode
     selected_candidates = candidates[: len(task_records)]
+    completed_results: list[dict[str, Any]] = []
 
-    call_coroutines = [
-        active_prov.execute_discovery_call(
-            task_record=task_records[idx],
-            trip=trip,
-            hotel=selected_candidates[idx],
-            index=idx,
-        )
-        for idx in range(len(task_records))
-    ]
+    async def _execute_single(idx: int) -> None:
+        task_rec = task_records[idx]
+        hotel_cand = selected_candidates[idx]
+        try:
+            res = await active_prov.execute_discovery_call(
+                task_record=task_rec,
+                trip=trip,
+                hotel=hotel_cand,
+                index=idx,
+            )
+            if isinstance(res, dict):
+                if not res.get("hotel_id"):
+                    res["hotel_id"] = hotel_cand.id
+                completed_results.append(res)
+                # Incrementally update offers in DB so frontend has them immediately
+                current_offers = process_trip_offers(
+                    raw_results=completed_results,
+                    trip=trip,
+                    hotels=selected_candidates,
+                    tasks=task_records,
+                )
+                db.offers[trip_id] = current_offers
+                logger.info(f"🔄 [INCREMENTAL OFFERS] Trip {trip_id}: {len(current_offers)} offers available now.")
+        except Exception as err:
+            logger.error(f"Error in discovery call for {hotel_cand.name}: {err}", exc_info=True)
+            if task_rec.status not in ("completed", "failed"):
+                task_rec.status = "completed"
+                db.update_task_record(trip.id, task_rec)
 
-    raw_results = await asyncio.gather(*call_coroutines, return_exceptions=True)
-    valid_results = [r for r in raw_results if isinstance(r, dict)]
+    call_coroutines = [_execute_single(idx) for idx in range(len(task_records))]
+    await asyncio.gather(*call_coroutines, return_exceptions=True)
 
-    # Normalize, validate and score all resulting hotel offers
-    offers = process_trip_offers(
-        raw_results=valid_results,
+    # Final normalization & guarantee offers exist
+    final_offers = process_trip_offers(
+        raw_results=completed_results,
         trip=trip,
         hotels=selected_candidates,
         tasks=task_records,
     )
-
-    db.offers[trip_id] = offers
+    db.offers[trip_id] = final_offers
     trip.status = "OFFERS_READY"
-    logger.info(f"✅ [CALL WORKFLOW COMPLETE] Trip {trip_id} offers generated: {len(offers)}")
+    logger.info(f"✅ [CALL WORKFLOW COMPLETE] Trip {trip_id} offers generated: {len(final_offers)}")
 
 
 class CallStartRequest(BaseModel):

@@ -24,6 +24,7 @@ export interface TripInput {
   budget_amount: number;
   budget_currency: string;
   min_rating?: number | null;
+  room_type_preference?: string;
   breakfast_required?: boolean;
   free_cancellation_required?: boolean;
   airport_transfer_preferred?: boolean;
@@ -53,6 +54,10 @@ export interface HotelCandidate {
   base_price_estimate?: number | null;
   discovery_source: string;
   photo_url?: string | null;
+  photos?: string[];
+  maps_url?: string | null;
+  maps_embed_url?: string | null;
+  place_id?: string | null;
 }
 
 export interface TranscriptTurn {
@@ -116,6 +121,15 @@ export interface HotelOfferRecord {
   score: number;
   recommendation_reason?: string | null;
   is_best_deal?: boolean;
+  photo_url?: string | null;
+  photos?: string[];
+  maps_url?: string | null;
+  maps_embed_url?: string | null;
+  address?: string | null;
+  rating?: number | null;
+  review_count?: number | null;
+  latitude?: number | null;
+  longitude?: number | null;
 }
 
 export interface BookingRecord {
@@ -138,6 +152,11 @@ export interface BookingRecord {
   guests_summary?: string | null;
   created_at: string;
   confirmed_at?: string | null;
+  photo_url?: string | null;
+  photos?: string[];
+  maps_url?: string | null;
+  maps_embed_url?: string | null;
+  address?: string | null;
 }
 
 export interface CallStatusResponse {

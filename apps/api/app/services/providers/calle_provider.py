@@ -153,9 +153,9 @@ class CalleProvider(BaseCallProvider):
                 db.update_task_record(trip.id, task_record)
                 logger.info(f"CALL-E call created with ID: {call_id}. Waiting for live conversation on {target_phone}...")
 
-                # Poll CALL-E until call ends
+                # Poll CALL-E until call ends (up to 30s)
                 poll_count = 0
-                max_polls = 80
+                max_polls = 15
                 while poll_count < max_polls:
                     await asyncio.sleep(2.0)
                     poll_count += 1
@@ -240,18 +240,19 @@ class CalleProvider(BaseCallProvider):
                     except Exception as poll_err:
                         logger.warning(f"Polling CALL-E error: {poll_err}")
 
-                # If polling loop ended
-                call_summary = getattr(live_call, "summary", "") if 'live_call' in locals() and hasattr(live_call, "summary") else ""
-                extracted_offer = extract_hotel_offer_from_transcript(
-                    transcript=task_record.transcript,
-                    trip=trip,
-                    hotel=hotel,
-                    summary=call_summary,
-                )
-                task_record.status = "completed"
-                task_record.raw_structured_result = extracted_offer
-                db.update_task_record(trip.id, task_record)
-                return extracted_offer
+                # If polling loop ended with transcripts captured
+                if task_record.transcript and len(task_record.transcript) > 0:
+                    call_summary = getattr(live_call, "summary", "") if 'live_call' in locals() and hasattr(live_call, "summary") else ""
+                    extracted_offer = extract_hotel_offer_from_transcript(
+                        transcript=task_record.transcript,
+                        trip=trip,
+                        hotel=hotel,
+                        summary=call_summary,
+                    )
+                    task_record.status = "completed"
+                    task_record.raw_structured_result = extracted_offer
+                    db.update_task_record(trip.id, task_record)
+                    return extracted_offer
 
             except Exception as e:
                 logger.warning(f"Live CALL-E API notice ({e}). Transitioning to HiFi Autonomous Voice Negotiation for [{hotel.name}]...")

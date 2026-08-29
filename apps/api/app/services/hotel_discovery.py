@@ -12,6 +12,50 @@ from app.services.hotel_ranker import rank_candidates
 
 logger = logging.getLogger(__name__)
 
+from urllib.parse import quote_plus
+
+# Helper to construct direct Google Maps and Embed URLs
+def generate_maps_urls(name: str, address: str) -> tuple[str, str]:
+    query = quote_plus(f"{name}, {address}")
+    maps_url = f"https://www.google.com/maps/search/?api=1&query={query}"
+    maps_embed_url = f"https://maps.google.com/maps?q={query}&t=&z=15&ie=UTF8&iwloc=&output=embed"
+    return maps_url, maps_embed_url
+
+# Curated high-res multi-photo sets categorized for luxury & boutique stays
+HOTEL_PHOTO_POOLS = [
+    [
+        "https://images.unsplash.com/photo-1571896349842-33c89424de2d?auto=format&fit=crop&w=1200&q=80", # Luxury Villa & Pool
+        "https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?auto=format&fit=crop&w=1200&q=80", # Master Suite / Bedroom
+        "https://images.unsplash.com/photo-1540555700478-4be289fbecef?auto=format&fit=crop&w=1200&q=80", # Tropical Balcony
+        "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1200&q=80", # Exterior Facade
+        "https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?auto=format&fit=crop&w=1200&q=80", # Gourmet Dining
+    ],
+    [
+        "https://images.unsplash.com/photo-1540541338287-41700207dee6?auto=format&fit=crop&w=1200&q=80", # Oceanfront Resort
+        "https://images.unsplash.com/photo-1590490360182-c33d57733427?auto=format&fit=crop&w=1200&q=80", # Deluxe King Bed
+        "https://images.unsplash.com/photo-1584132967334-10e028bd69f7?auto=format&fit=crop&w=1200&q=80", # Infinity Pool View
+        "https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?auto=format&fit=crop&w=1200&q=80", # Sunset Terrace
+    ],
+    [
+        "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=1200&q=80", # Rainforest Resort
+        "https://images.unsplash.com/photo-1578683010236-d716f9a3f461?auto=format&fit=crop&w=1200&q=80", # Luxury Bath & Spa
+        "https://images.unsplash.com/photo-1618773928121-c32242e63f39?auto=format&fit=crop&w=1200&q=80", # Modern Room Interior
+        "https://images.unsplash.com/photo-1544161515-4ab6ce6db874?auto=format&fit=crop&w=1200&q=80", # Spa & Wellness
+    ],
+    [
+        "https://images.unsplash.com/photo-1582719508461-905c673771fd?auto=format&fit=crop&w=1200&q=80", # Beachside Pool Villa
+        "https://images.unsplash.com/photo-1566665797739-1674de7a421a?auto=format&fit=crop&w=1200&q=80", # Minimalist Suite
+        "https://images.unsplash.com/photo-1571003123894-1f0594d2b5d9?auto=format&fit=crop&w=1200&q=80", # Resort Grounds
+        "https://images.unsplash.com/photo-1507652313519-d4e9174996dd?auto=format&fit=crop&w=1200&q=80", # Poolside Loungers
+    ],
+    [
+        "https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?auto=format&fit=crop&w=1200&q=80", # Cliffside Sunset Haven
+        "https://images.unsplash.com/photo-1591088398332-8a7791972843?auto=format&fit=crop&w=1200&q=80", # Panoramic Ocean Bedroom
+        "https://images.unsplash.com/photo-1578683010236-d716f9a3f461?auto=format&fit=crop&w=1200&q=80", # Marble En-suite
+        "https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?auto=format&fit=crop&w=1200&q=80", # Fine Dining Rooftop
+    ],
+]
+
 # Rich regional candidate pools for reliable offline demo & instant testing
 DESTINATION_CATALOGS: dict[str, list[dict[str, Any]]] = {
     "bali": [
@@ -23,13 +67,18 @@ DESTINATION_CATALOGS: dict[str, list[dict[str, Any]]] = {
             "rating": 4.8,
             "review_count": 1240,
             "website": "https://oceanpearl-bali.example.com",
+            "latitude": -8.8021,
+            "longitude": 115.2285,
             "base_price": 45000,
             "breakfast_included": True,
             "transfer_available": True,
             "free_cancellation": True,
             "upgrade_available": True,
             "late_checkout_available": True,
-            "photo_url": "https://images.unsplash.com/photo-1571896349842-33c89424de2d?auto=format&fit=crop&w=800&q=80",
+            "photo_url": HOTEL_PHOTO_POOLS[0][0],
+            "photos": HOTEL_PHOTO_POOLS[0],
+            "maps_url": "https://www.google.com/maps/search/?api=1&query=Ocean+Pearl+Resort+Nusa+Dua+Bali",
+            "maps_embed_url": "https://maps.google.com/maps?q=Ocean+Pearl+Resort+Nusa+Dua+Bali&t=&z=15&ie=UTF8&iwloc=&output=embed",
         },
         {
             "id": "hotel-bali-2",
@@ -39,13 +88,18 @@ DESTINATION_CATALOGS: dict[str, list[dict[str, Any]]] = {
             "rating": 4.6,
             "review_count": 930,
             "website": "https://canggucove.example.com",
+            "latitude": -8.6539,
+            "longitude": 115.1325,
             "base_price": 43000,
             "breakfast_included": False,
             "transfer_available": False,
             "free_cancellation": True,
             "upgrade_available": False,
             "late_checkout_available": True,
-            "photo_url": "https://images.unsplash.com/photo-1540541338287-41700207dee6?auto=format&fit=crop&w=800&q=80",
+            "photo_url": HOTEL_PHOTO_POOLS[1][0],
+            "photos": HOTEL_PHOTO_POOLS[1],
+            "maps_url": "https://www.google.com/maps/search/?api=1&query=Canggu+Cove+Retreat+Batu+Bolong+Bali",
+            "maps_embed_url": "https://maps.google.com/maps?q=Canggu+Cove+Retreat+Batu+Bolong+Bali&t=&z=15&ie=UTF8&iwloc=&output=embed",
         },
         {
             "id": "hotel-bali-3",
@@ -55,13 +109,18 @@ DESTINATION_CATALOGS: dict[str, list[dict[str, Any]]] = {
             "rating": 4.7,
             "review_count": 860,
             "website": "https://ubudgrove.example.com",
+            "latitude": -8.4975,
+            "longitude": 115.2536,
             "base_price": 47000,
             "breakfast_included": True,
             "transfer_available": True,
             "free_cancellation": False,
             "upgrade_available": True,
             "late_checkout_available": False,
-            "photo_url": "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=800&q=80",
+            "photo_url": HOTEL_PHOTO_POOLS[2][0],
+            "photos": HOTEL_PHOTO_POOLS[2],
+            "maps_url": "https://www.google.com/maps/search/?api=1&query=Ubud+Rainforest+Grove+Stay+Gianyar+Bali",
+            "maps_embed_url": "https://maps.google.com/maps?q=Ubud+Rainforest+Grove+Stay+Gianyar+Bali&t=&z=15&ie=UTF8&iwloc=&output=embed",
         },
         {
             "id": "hotel-bali-4",
@@ -71,13 +130,18 @@ DESTINATION_CATALOGS: dict[str, list[dict[str, Any]]] = {
             "rating": 4.5,
             "review_count": 780,
             "website": "https://seminyakvillas.example.com",
+            "latitude": -8.6872,
+            "longitude": 115.1558,
             "base_price": 42000,
             "breakfast_included": False,
             "transfer_available": True,
             "free_cancellation": True,
             "upgrade_available": False,
             "late_checkout_available": False,
-            "photo_url": "https://images.unsplash.com/photo-1582719508461-905c673771fd?auto=format&fit=crop&w=800&q=80",
+            "photo_url": HOTEL_PHOTO_POOLS[3][0],
+            "photos": HOTEL_PHOTO_POOLS[3],
+            "maps_url": "https://www.google.com/maps/search/?api=1&query=Seminyak+Beachside+Villas+Kayu+Aya+Bali",
+            "maps_embed_url": "https://maps.google.com/maps?q=Seminyak+Beachside+Villas+Kayu+Aya+Bali&t=&z=15&ie=UTF8&iwloc=&output=embed",
         },
         {
             "id": "hotel-bali-5",
@@ -87,13 +151,18 @@ DESTINATION_CATALOGS: dict[str, list[dict[str, Any]]] = {
             "rating": 4.9,
             "review_count": 1520,
             "website": "https://jimbaranbay.example.com",
+            "latitude": -8.7758,
+            "longitude": 115.1611,
             "base_price": 54000,
             "breakfast_included": True,
             "transfer_available": True,
             "free_cancellation": True,
             "upgrade_available": True,
             "late_checkout_available": True,
-            "photo_url": "https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?auto=format&fit=crop&w=800&q=80",
+            "photo_url": HOTEL_PHOTO_POOLS[4][0],
+            "photos": HOTEL_PHOTO_POOLS[4],
+            "maps_url": "https://www.google.com/maps/search/?api=1&query=Jimbaran+Bay+Cliff+Suites+Bukit+Permai+Bali",
+            "maps_embed_url": "https://maps.google.com/maps?q=Jimbaran+Bay+Cliff+Suites+Bukit+Permai+Bali&t=&z=15&ie=UTF8&iwloc=&output=embed",
         },
     ],
     "tokyo": [
@@ -105,13 +174,23 @@ DESTINATION_CATALOGS: dict[str, list[dict[str, Any]]] = {
             "rating": 4.8,
             "review_count": 2100,
             "website": "https://princegallery-tokyo.example.com",
+            "latitude": 35.6804,
+            "longitude": 139.7371,
             "base_price": 62000,
             "breakfast_included": True,
             "transfer_available": True,
             "free_cancellation": True,
             "upgrade_available": True,
             "late_checkout_available": True,
-            "photo_url": "https://images.unsplash.com/photo-1503899036084-c55cdd92da26?auto=format&fit=crop&w=800&q=80",
+            "photo_url": "https://images.unsplash.com/photo-1503899036084-c55cdd92da26?auto=format&fit=crop&w=1200&q=80",
+            "photos": [
+                "https://images.unsplash.com/photo-1503899036084-c55cdd92da26?auto=format&fit=crop&w=1200&q=80",
+                "https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?auto=format&fit=crop&w=1200&q=80",
+                "https://images.unsplash.com/photo-1590490360182-c33d57733427?auto=format&fit=crop&w=1200&q=80",
+                "https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?auto=format&fit=crop&w=1200&q=80",
+            ],
+            "maps_url": "https://www.google.com/maps/search/?api=1&query=The+Prince+Gallery+Tokyo+Kioicho",
+            "maps_embed_url": "https://maps.google.com/maps?q=The+Prince+Gallery+Tokyo+Kioicho&t=&z=15&ie=UTF8&iwloc=&output=embed",
         },
         {
             "id": "hotel-tokyo-2",
@@ -121,13 +200,22 @@ DESTINATION_CATALOGS: dict[str, list[dict[str, Any]]] = {
             "rating": 4.5,
             "review_count": 1450,
             "website": "https://granbell-tokyo.example.com",
+            "latitude": 35.6961,
+            "longitude": 139.7042,
             "base_price": 48000,
             "breakfast_included": False,
             "transfer_available": False,
             "free_cancellation": True,
             "upgrade_available": False,
             "late_checkout_available": True,
-            "photo_url": "https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?auto=format&fit=crop&w=800&q=80",
+            "photo_url": "https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?auto=format&fit=crop&w=1200&q=80",
+            "photos": [
+                "https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?auto=format&fit=crop&w=1200&q=80",
+                "https://images.unsplash.com/photo-1503899036084-c55cdd92da26?auto=format&fit=crop&w=1200&q=80",
+                "https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?auto=format&fit=crop&w=1200&q=80",
+            ],
+            "maps_url": "https://www.google.com/maps/search/?api=1&query=Shinjuku+Granbell+Hotel+Tokyo",
+            "maps_embed_url": "https://maps.google.com/maps?q=Shinjuku+Granbell+Hotel+Tokyo&t=&z=15&ie=UTF8&iwloc=&output=embed",
         },
         {
             "id": "hotel-tokyo-3",
@@ -137,13 +225,22 @@ DESTINATION_CATALOGS: dict[str, list[dict[str, Any]]] = {
             "rating": 4.7,
             "review_count": 1820,
             "website": "https://ginzagrand.example.com",
+            "latitude": 35.6698,
+            "longitude": 139.7612,
             "base_price": 53000,
             "breakfast_included": True,
             "transfer_available": True,
             "free_cancellation": True,
             "upgrade_available": True,
             "late_checkout_available": False,
-            "photo_url": "https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?auto=format&fit=crop&w=800&q=80",
+            "photo_url": "https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?auto=format&fit=crop&w=1200&q=80",
+            "photos": [
+                "https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?auto=format&fit=crop&w=1200&q=80",
+                "https://images.unsplash.com/photo-1590490360182-c33d57733427?auto=format&fit=crop&w=1200&q=80",
+                "https://images.unsplash.com/photo-1503899036084-c55cdd92da26?auto=format&fit=crop&w=1200&q=80",
+            ],
+            "maps_url": "https://www.google.com/maps/search/?api=1&query=Ginza+Grand+Palace+Hotel+Tokyo",
+            "maps_embed_url": "https://maps.google.com/maps?q=Ginza+Grand+Palace+Hotel+Tokyo&t=&z=15&ie=UTF8&iwloc=&output=embed",
         },
     ],
 }
@@ -183,7 +280,8 @@ class HotelDiscoveryService:
             "X-Goog-FieldMask": (
                 "places.id,places.displayName,places.formattedAddress,"
                 "places.location,places.rating,places.userRatingCount,"
-                "places.internationalPhoneNumber,places.nationalPhoneNumber,places.websiteUri"
+                "places.internationalPhoneNumber,places.nationalPhoneNumber,places.websiteUri,"
+                "places.googleMapsUri,places.photos"
             ),
         }
         payload = {
@@ -204,13 +302,25 @@ class HotelDiscoveryService:
 
             for idx, p in enumerate(places_data):
                 display_name = p.get("displayName", {}).get("text", f"Hotel in {query}")
+                address = p.get("formattedAddress", query)
                 phone = p.get("internationalPhoneNumber") or p.get("nationalPhoneNumber")
                 if not phone:
                     phone = f"+62 361 {200000 + (idx * 1357)}" if "bali" in query.lower() else f"+91 98{100 + idx} {20000 + idx * 111}"
+                
+                place_id = p.get("id", f"place-{idx}")
+                maps_url = p.get("googleMapsUri")
+                if not maps_url:
+                    maps_url, _ = generate_maps_urls(display_name, address)
+                _, maps_embed_url = generate_maps_urls(display_name, address)
+
+                # Photo pool assignment
+                photo_set = HOTEL_PHOTO_POOLS[idx % len(HOTEL_PHOTO_POOLS)]
+
                 results.append({
-                    "id": p.get("id", f"place-{idx}"),
+                    "id": place_id,
+                    "place_id": place_id,
                     "name": display_name,
-                    "address": p.get("formattedAddress", query),
+                    "address": address,
                     "phone_number": phone,
                     "rating": p.get("rating", 4.5),
                     "review_count": p.get("userRatingCount", 250),
@@ -222,6 +332,10 @@ class HotelDiscoveryService:
                     "transfer_available": True if idx % 2 == 0 else False,
                     "free_cancellation": True,
                     "discovery_source": "google_places_api",
+                    "photo_url": photo_set[0],
+                    "photos": photo_set,
+                    "maps_url": maps_url,
+                    "maps_embed_url": maps_embed_url,
                 })
             return results
 
@@ -237,11 +351,15 @@ class HotelDiscoveryService:
             f"Royal Palm Sanctuary {dest}",
         ]
         base_budget = trip.budget_amount
-        return [
-            {
+        results = []
+        for idx, name in enumerate(names):
+            address = f"{100 + idx * 25} Main Boulevard, {dest}"
+            maps_url, maps_embed_url = generate_maps_urls(name, address)
+            photo_set = HOTEL_PHOTO_POOLS[idx % len(HOTEL_PHOTO_POOLS)]
+            results.append({
                 "id": f"gen-hotel-{idx+1}",
                 "name": name,
-                "address": f"{100 + idx * 25} Main Boulevard, {dest}",
+                "address": address,
                 "phone_number": f"+91 98{110 + idx} {22000 + idx * 123}",
                 "rating": round(4.8 - (idx * 0.08), 1),
                 "review_count": 1200 - (idx * 150),
@@ -253,7 +371,9 @@ class HotelDiscoveryService:
                 "upgrade_available": idx in (0, 4),
                 "late_checkout_available": idx in (0, 1, 3),
                 "discovery_source": "hifi_discovery_engine",
-                "photo_url": "https://images.unsplash.com/photo-1571896349842-33c89424de2d?auto=format&fit=crop&w=800&q=80",
-            }
-            for idx, name in enumerate(names)
-        ]
+                "photo_url": photo_set[0],
+                "photos": photo_set,
+                "maps_url": maps_url,
+                "maps_embed_url": maps_embed_url,
+            })
+        return results

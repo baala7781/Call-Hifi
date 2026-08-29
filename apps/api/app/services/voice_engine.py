@@ -23,8 +23,8 @@ async def generate_autonomous_negotiation_dialogue(
     """Asynchronously generates dynamic, realistic front desk dialogue and negotiation outcome using Gemini 2.5 Flash."""
     api_key = settings.gemini_api_key
     nights = max(1, (trip.check_out - trip.check_in).days)
-    budget = trip.budget_amount or 50000.0
-    currency = trip.budget_currency or "INR"
+    budget = trip.budget_amount or 600.0
+    currency = trip.budget_currency or "USD"
 
     prompt = f"""Simulate a realistic, natural 5-7 turn voice phone conversation between Alex (HiFi Travel Coordinator) and the front desk of {hotel.name}.
 
@@ -108,9 +108,9 @@ CONVERSATION FLOW:
                     await asyncio.sleep(1.0 * (attempt + 1))
 
     # Dynamic procedural generator tailored to property
-    orig_total = round(budget * (0.82 + (index * 0.04) + random.uniform(-0.02, 0.03)), -1)
-    savings = round(1500 + (index * 500) + random.uniform(200, 600), -1)
-    nego_total = max(1000.0, orig_total - savings)
+    orig_total = round(budget * (0.82 + (index * 0.04) + random.uniform(-0.02, 0.03)), 0)
+    savings = round(45 + (index * 20) + random.uniform(5, 15), 0) if budget <= 5000 else round(1500 + (index * 500) + random.uniform(200, 600), -1)
+    nego_total = max(50.0, orig_total - savings)
 
     room_categories = [
         "Deluxe Garden View Room",

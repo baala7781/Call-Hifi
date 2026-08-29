@@ -98,6 +98,15 @@ def validate_and_normalize_raw_result(
         offer_notes=raw.get("notes") or "Direct booking quote confirmed by hotel reception.",
         confidence=task.completion_confidence or 0.92,
         raw_structured_result=raw,
+        photo_url=hotel.photo_url,
+        photos=hotel.photos or ([hotel.photo_url] if hotel.photo_url else []),
+        maps_url=hotel.maps_url,
+        maps_embed_url=hotel.maps_embed_url,
+        address=hotel.address,
+        rating=hotel.rating,
+        review_count=hotel.review_count,
+        latitude=hotel.latitude,
+        longitude=hotel.longitude,
     )
 
     # Compute HiFi score
@@ -176,30 +185,29 @@ def calculate_offer_score(offer: HotelOfferRecord, trip: TripRecord) -> float:
 
 
 def generate_recommendation_reason(offer: HotelOfferRecord, trip: TripRecord) -> str:
-    """Generates transparent, plain-English justification for why this offer is recommended."""
+    """Generates transparent, plain-English justification for why this offer was selected by the agent."""
     reasons = []
 
     if offer.negotiated_savings and offer.negotiated_savings > 0:
-        reasons.append(f"offers {offer.currency} {offer.negotiated_savings:,.0f} in verified direct-booking savings")
+        reasons.append(f"a negotiated direct discount of {offer.currency} {offer.negotiated_savings:,.0f} off rack rate")
 
     if offer.breakfast_included:
-        reasons.append("includes complimentary daily breakfast")
+        reasons.append("complimentary daily buffet breakfast")
 
     if offer.free_cancellation:
-        reasons.append("features flexible free cancellation")
+        reasons.append(f"free cancellation ({offer.cancellation_deadline or '48h'})")
 
     if offer.airport_transfer_available:
-        reasons.append("provides airport transportation")
+        reasons.append("included airport transfer")
 
     final_price = offer.negotiated_total or offer.total_price or 0
-    if final_price <= trip.budget_amount:
-        reasons.append(f"comfortably fits within your {trip.budget_currency} {trip.budget_amount:,.0f} budget cap")
+    price_fit = f"all within your {trip.budget_currency} {trip.budget_amount:,.0f} budget cap" if final_price <= trip.budget_amount else f"at {offer.currency} {final_price:,.0f}"
 
-    if not reasons:
-        return f"{offer.hotel_name} achieves the highest overall quality and value score for your stay."
-
-    joined = ", ".join(reasons[:-1]) + f", and {reasons[-1]}" if len(reasons) > 1 else reasons[0]
-    return f"{offer.hotel_name} is our top recommendation because it {joined}."
+    if reasons:
+        joined_perks = ", ".join(reasons[:-1]) + f", and {reasons[-1]}" if len(reasons) > 1 else reasons[0]
+        return f"{offer.hotel_name} is our top recommendation: CALL-E locked in {joined_perks} ({price_fit}), giving it the highest overall value score ({offer.score:.0f}/100)."
+    
+    return f"{offer.hotel_name} is our top recommendation ({price_fit}) achieving the highest verified quality and terms score ({offer.score:.0f}/100)."
 
 
 def process_trip_offers(
@@ -222,13 +230,30 @@ def process_trip_offers(
             continue
 
         offer = validate_and_normalize_raw_result(raw, trip, hotel, task)
+        # Ensure immutable hotel identity
+        offer.hotel_id = hotel.id
+        offer.hotel_name = hotel.name
         offers.append(offer)
+
+    # Check if any tasks completed with raw_structured_result that were missed
+    existing_hotel_ids = {o.hotel_id for o in offers}
+    for hotel in hotels:
+        if hotel.id not in existing_hotel_ids:
+            task = task_map.get(hotel.id)
+            if task and task.raw_structured_result and isinstance(task.raw_structured_result, dict):
+                raw = dict(task.raw_structured_result)
+                raw["hotel_id"] = hotel.id
+                offer = validate_and_normalize_raw_result(raw, trip, hotel, task)
+                offer.hotel_id = hotel.id
+                offer.hotel_name = hotel.name
+                offers.append(offer)
 
     # Sort descending by score
     offers.sort(key=lambda o: (o.available, o.score), reverse=True)
 
-    if offers and offers[0].available:
-        offers[0].is_best_deal = True
-        offers[0].recommendation_reason = generate_recommendation_reason(offers[0], trip)
+    for idx, off in enumerate(offers):
+        off.recommendation_reason = generate_recommendation_reason(off, trip)
+        if idx == 0 and off.available:
+            off.is_best_deal = True
 
     return offers

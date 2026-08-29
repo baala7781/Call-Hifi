@@ -49,6 +49,7 @@ export default function Home() {
 
   const [booking, setBooking] = useState<BookingRecord | null>(null);
   const [loading, setLoading] = useState(false);
+  const [selectedForCallsCount, setSelectedForCallsCount] = useState<number>(0);
 
   const [formData, setFormData] = useState<TripFormData>({
     destination: "Bali",
@@ -57,8 +58,9 @@ export default function Home() {
     adults: 2,
     children: 0,
     rooms: 1,
-    budget_amount: 50000,
-    budget_currency: "INR",
+    room_type_preference: "any",
+    budget_amount: 2000,
+    budget_currency: "USD",
     min_rating: 4.0,
     breakfast_required: true,
     free_cancellation_required: true,
@@ -105,8 +107,8 @@ export default function Home() {
         adults: 2,
         children: 0,
         rooms: 1,
-        budget_amount: 50000,
-        budget_currency: "INR",
+        budget_amount: 2000,
+        budget_currency: "USD",
         min_rating: 4.0,
         breakfast_required: true,
         free_cancellation_required: true,
@@ -122,8 +124,8 @@ export default function Home() {
         adults: 2,
         children: 0,
         rooms: 1,
-        budget_amount: 60000,
-        budget_currency: "INR",
+        budget_amount: 800,
+        budget_currency: "USD",
         min_rating: 4.0,
         breakfast_required: true,
         free_cancellation_required: true,
@@ -185,6 +187,7 @@ export default function Home() {
     if (!trip) return;
     setLoading(true);
     try {
+      setSelectedForCallsCount(selectedHotelIds?.length || 3);
       const callRes = await fetch(`${API_BASE_URL}/api/v1/trips/${trip.id}/calls/start`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -216,14 +219,17 @@ export default function Home() {
         if (!res.ok) return;
 
         const data: CallStatusResponse = await res.json();
-        setCalls(data.calls);
-        setOffers(data.offers);
+        setCalls(data.calls || []);
 
-        // Once all completed or offers ready
-        if (data.trip_status === "OFFERS_READY" || data.completed_count >= data.call_count) {
-          if (data.offers.length > 0) {
-            setOffers(data.offers);
-          }
+        if (data.offers && data.offers.length > 0) {
+          setOffers(data.offers);
+        }
+
+        // Auto-transition to offers when backend signals OFFERS_READY or all calls complete and offers exist
+        if ((data.trip_status === "OFFERS_READY" || data.completed_count >= data.call_count) && data.offers && data.offers.length > 0) {
+          setOffers(data.offers);
+          if (pollingRef.current) clearInterval(pollingRef.current);
+          setStage("offers");
         }
       } catch (err) {
         console.error("Polling error:", err);
@@ -238,11 +244,42 @@ export default function Home() {
     };
   }, []);
 
+  // Continuous polling while in offers stage if offers are not yet loaded
+  useEffect(() => {
+    if (stage !== "offers" || !trip) return;
+    if (offers.length > 0) return;
+
+    let isMounted = true;
+    const fetchOffers = async () => {
+      try {
+        const res = await fetch(`${API_BASE_URL}/api/v1/trips/${trip.id}/calls/status`);
+        if (!res.ok) return;
+        const data = await res.json();
+        if (isMounted) {
+          if (data.calls && data.calls.length > 0) {
+            setCalls(data.calls);
+          }
+          if (data.offers && data.offers.length > 0) {
+            setOffers(data.offers);
+          }
+        }
+      } catch (err) {
+        console.error("Error polling offers in offers stage:", err);
+      }
+    };
+
+    fetchOffers();
+    const interval = setInterval(fetchOffers, 1500);
+    return () => {
+      isMounted = false;
+      clearInterval(interval);
+    };
+  }, [stage, trip, offers.length]);
+
   const completedCount = calls.filter((c) => c.status === "completed" || c.status === "failed").length;
   const isAllCallsCompleted = calls.length > 0 && completedCount >= calls.length;
 
   const handleGoToOffers = async () => {
-    if (pollingRef.current) clearInterval(pollingRef.current);
     if (trip) {
       try {
         const res = await fetch(`${API_BASE_URL}/api/v1/trips/${trip.id}/calls/status`);
@@ -371,7 +408,7 @@ export default function Home() {
             <CallDashboard
               calls={calls}
               completedCount={completedCount}
-              totalCalls={candidates.length || 5}
+              totalCalls={selectedForCallsCount || calls.length || 3}
               destination={trip?.destination || formData.destination}
               onViewOffers={handleGoToOffers}
               isAllCompleted={isAllCallsCompleted || offers.length > 0}
@@ -385,7 +422,8 @@ export default function Home() {
             <OfferComparison
               offers={offers}
               onSelectOffer={handleSelectOffer}
-              currency={trip?.budget_currency || "INR"}
+              currency={trip?.budget_currency || "USD"}
+              onBackToCalling={() => setStage("calling")}
             />
           </div>
         )}

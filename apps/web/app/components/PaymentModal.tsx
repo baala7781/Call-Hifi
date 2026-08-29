@@ -130,7 +130,7 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
         <div className="flex items-center gap-2 text-[11px] text-slate-400">
           <ShieldCheck className="w-4 h-4 text-emerald-400 shrink-0" />
           <span>
-            Simulated checkout. Upon payment, HiFi immediately calls {offer.hotel_name} to confirm reservation.
+            Simulated checkout. Upon authorization, HiFi immediately calls {offer.hotel_name} front desk to lock in and confirm your reservation terms.
           </span>
         </div>
 
@@ -143,12 +143,12 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
           {isLoading ? (
             <span className="flex items-center gap-2">
               <span className="w-4 h-4 border-2 border-slate-950 border-t-transparent rounded-full animate-spin" />
-              Calling hotel to confirm...
+              Calling hotel to confirm reservation...
             </span>
           ) : (
             <span className="flex items-center gap-2">
               <Lock className="w-4 h-4" />
-              Pay {offer.currency} {offer.negotiated_total?.toLocaleString()} & Confirm with CALL-E
+              Authorize {offer.currency} {offer.negotiated_total?.toLocaleString()} & Confirm Reservation
               <ArrowRight className="w-4 h-4" />
             </span>
           )}

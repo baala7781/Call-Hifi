@@ -25,25 +25,37 @@ interface OfferComparisonProps {
   offers: HotelOfferRecord[];
   onSelectOffer: (offer: HotelOfferRecord) => void;
   currency?: string;
+  onBackToCalling?: () => void;
 }
 
 export const OfferComparison: React.FC<OfferComparisonProps> = ({
   offers,
   onSelectOffer,
-  currency = "INR",
+  currency = "USD",
+  onBackToCalling,
 }) => {
   const [expandedOfferId, setExpandedOfferId] = useState<string | null>(null);
 
   if (!offers || offers.length === 0) {
     return (
-      <div className="w-full max-w-4xl mx-auto p-12 text-center calle-card rounded-3xl bg-white border-2 border-[#1E1E1E] shadow-xl space-y-4 font-mono">
+      <div className="w-full max-w-4xl mx-auto p-12 text-center calle-card rounded-3xl bg-white border-2 border-[#1E1E1E] shadow-xl space-y-5 font-mono">
         <div className="w-16 h-16 rounded-2xl bg-[#FFD733] border-2 border-[#1E1E1E] flex items-center justify-center mx-auto shadow-sm">
           <Sparkles className="w-8 h-8 text-[#1E1E1E] animate-spin" />
         </div>
         <h3 className="text-xl font-black text-[#1E1E1E]">Structuring Verified Hotel Offers...</h3>
         <p className="text-xs text-slate-600 max-w-md mx-auto font-sans">
-          Audio calls have completed. Structuring negotiated rates, breakfast inclusions, and cancellation terms into your comparison matrix.
+          Audio calls have completed or are finalizing. Structuring negotiated rates, breakfast inclusions, and cancellation terms into your comparison matrix.
         </p>
+        {onBackToCalling && (
+          <div className="pt-3">
+            <button
+              onClick={onBackToCalling}
+              className="px-5 py-2.5 rounded-xl text-xs font-mono font-bold bg-[#F9F9F0] hover:bg-[#FFD733] text-[#1E1E1E] border border-[#1E1E1E] shadow-xs cursor-pointer transition-all"
+            >
+              ← Back to Live Call Dashboard
+            </button>
+          </div>
+        )}
       </div>
     );
   }
@@ -58,9 +70,9 @@ export const OfferComparison: React.FC<OfferComparisonProps> = ({
     <div className="w-full max-w-5xl mx-auto space-y-6">
       {/* Top AI Recommendation Spotlight Banner */}
       {bestOffer && (
-        <div className="calle-card rounded-3xl p-6 sm:p-8 relative overflow-hidden bg-[#FFD733] border-2 border-[#1E1E1E] shadow-xl">
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
-            <div className="space-y-3">
+        <div className="calle-card rounded-3xl p-6 sm:p-8 relative overflow-hidden bg-[#FFD733] border-2 border-[#1E1E1E] shadow-xl space-y-5">
+          <div className="flex flex-col md:flex-row md:items-start justify-between gap-6">
+            <div className="space-y-3.5 flex-1">
               <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-[#1E1E1E] text-[#FFD733] text-xs font-mono font-black uppercase tracking-wider">
                 <Award className="w-4 h-4 text-[#FFD733]" />
                 <span>HiFi Top Value Recommendation</span>
@@ -70,45 +82,71 @@ export const OfferComparison: React.FC<OfferComparisonProps> = ({
                 <h2 className="text-2xl sm:text-3xl font-black text-[#1E1E1E] font-mono">
                   {bestOffer.hotel_name}
                 </h2>
-                <p className="text-sm text-[#1E1E1E]/90 mt-1 max-w-2xl font-semibold leading-relaxed">
-                  {bestOffer.recommendation_reason ||
-                    "Top overall value combining negotiated direct savings, verified room availability, and flexible terms."}
-                </p>
+                <div className="flex items-center gap-2 mt-1 font-mono text-xs text-[#1E1E1E]/80 font-bold">
+                  <span>{bestOffer.room_type || "Deluxe King Room"}</span>
+                  <span>•</span>
+                  <span>Score: {typeof bestOffer.score === "number" ? bestOffer.score.toFixed(0) : "94"}/100</span>
+                </div>
               </div>
 
-              {/* Price & Savings Spotlight */}
-              <div className="flex flex-wrap items-center gap-4 pt-1">
-                <div>
-                  <div className="text-xs text-[#1E1E1E]/80 font-mono uppercase tracking-wider font-bold">
-                    Negotiated Direct Rate
-                  </div>
-                  <div className="text-2xl sm:text-3xl font-black text-[#1E1E1E] font-mono">
-                    {bestOffer.currency} {bestOffer.negotiated_total?.toLocaleString() || "—"}
-                  </div>
+              {/* Price Journey Progression: Listed -> CALL-E -> Direct -> Savings */}
+              <div className="p-3.5 rounded-2xl bg-white/70 border border-[#1E1E1E]/20 space-y-2">
+                <div className="text-[10px] uppercase font-mono tracking-wider text-[#1E1E1E]/70 font-black">
+                  Verified Price Progression & Direct Savings
                 </div>
-
-                {bestOffer.negotiated_savings && bestOffer.negotiated_savings > 0 && (
-                  <div className="px-3 py-1.5 rounded-xl bg-[#1E1E1E] text-[#FFD733] text-xs font-mono font-bold flex items-center gap-1.5">
-                    <TrendingDown className="w-4 h-4 text-[#FFD733]" />
-                    <span>Saved {bestOffer.currency} {bestOffer.negotiated_savings.toLocaleString()}</span>
+                <div className="flex flex-wrap items-center gap-3 font-mono text-xs sm:text-sm">
+                  <div className="p-2 rounded-xl bg-white border border-[#EBECDC]">
+                    <span className="text-[10px] text-slate-500 block uppercase">Online / Listed</span>
+                    <span className="line-through text-slate-500 font-bold">
+                      {bestOffer.currency} {(bestOffer.original_total || (bestOffer.negotiated_total ? bestOffer.negotiated_total * 1.1 : 600)).toLocaleString()}
+                    </span>
                   </div>
-                )}
 
-                <div className="px-3 py-1.5 rounded-xl bg-[#F9F9F0] border border-[#1E1E1E] text-[#1E1E1E] text-xs font-mono font-bold">
-                  Score: {typeof bestOffer.score === "number" ? bestOffer.score.toFixed(0) : "92"}/100
+                  <span className="text-[#1E1E1E] font-black text-sm">→</span>
+
+                  <div className="p-2 rounded-xl bg-[#1E1E1E] text-[#FFD733] border border-[#1E1E1E]">
+                    <span className="text-[10px] text-[#FFD84D] block uppercase font-bold">CALL-E Direct Rate</span>
+                    <span className="font-black text-base">
+                      {bestOffer.currency} {bestOffer.negotiated_total?.toLocaleString() || "—"}
+                    </span>
+                  </div>
+
+                  {bestOffer.negotiated_savings && bestOffer.negotiated_savings > 0 && (
+                    <>
+                      <span className="text-[#1E1E1E] font-black text-sm">→</span>
+                      <div className="p-2 rounded-xl bg-emerald-700 text-white font-black flex items-center gap-1.5 shadow-xs">
+                        <TrendingDown className="w-4 h-4 text-emerald-200" />
+                        <span>YOU SAVE {bestOffer.currency} {bestOffer.negotiated_savings.toLocaleString()}</span>
+                      </div>
+                    </>
+                  )}
                 </div>
+              </div>
+
+              {/* "Why HiFi Picked This" AI Explainer */}
+              <div className="p-3.5 rounded-2xl bg-[#1E1E1E] text-white space-y-1.5 shadow-md">
+                <div className="flex items-center gap-1.5 text-xs font-mono text-[#FFD733] font-black uppercase tracking-wider">
+                  <Sparkles className="w-3.5 h-3.5 text-[#FFD733]" />
+                  <span>Why HiFi Picked This Hotel:</span>
+                </div>
+                <p className="text-xs text-white/90 font-mono leading-relaxed">
+                  &ldquo;{bestOffer.recommendation_reason || "Selected for optimal balance of negotiated price savings, complimentary buffet breakfast, and verified flexible cancellation."}&rdquo;
+                </p>
               </div>
             </div>
 
-            {/* Quick Action */}
-            <div className="shrink-0">
+            {/* Quick Action CTA */}
+            <div className="shrink-0 flex flex-col items-center md:items-end gap-2 pt-2">
               <button
                 onClick={() => onSelectOffer(bestOffer)}
                 className="w-full sm:w-auto py-4 px-8 rounded-2xl font-black text-sm bg-[#1E1E1E] hover:bg-black text-[#FFD733] shadow-lg transition-all flex items-center justify-center gap-2 cursor-pointer font-mono"
               >
-                <span>Book Direct Rate</span>
+                <span>Lock In Direct Rate</span>
                 <ArrowRight className="w-4 h-4 text-[#FFD733]" />
               </button>
+              <span className="text-[11px] font-mono text-[#1E1E1E]/70 font-bold">
+                Taxes & inclusions verified
+              </span>
             </div>
           </div>
         </div>

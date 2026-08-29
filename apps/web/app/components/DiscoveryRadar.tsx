@@ -2,7 +2,21 @@
 
 import React, { useState } from "react";
 import { HotelCandidate } from "@call-e/shared-types";
-import { Phone, Star, Shield, ArrowRight, CheckCircle, CheckSquare, Square, Search, SlidersHorizontal, MapPin } from "lucide-react";
+import {
+  Phone,
+  Star,
+  Shield,
+  ArrowRight,
+  CheckCircle,
+  CheckSquare,
+  Square,
+  Search,
+  MapPin,
+  Camera,
+  Compass,
+  ExternalLink,
+} from "lucide-react";
+import { HotelMediaModal } from "./HotelMediaModal";
 
 interface DiscoveryRadarProps {
   candidates: HotelCandidate[];
@@ -21,15 +35,23 @@ export const DiscoveryRadar: React.FC<DiscoveryRadarProps> = ({
   onStartCalls,
   isLoading = false,
 }) => {
-  // Default to selecting top 3
+  // Default to selecting top 5 recommended
   const [selectedIds, setSelectedIds] = useState<Set<string>>(() => {
     const initial = new Set<string>();
-    candidates.slice(0, 3).forEach((c) => initial.add(c.id));
+    candidates.slice(0, 5).forEach((c) => initial.add(c.id));
     return initial;
   });
 
   const [searchQuery, setSearchQuery] = useState("");
   const [minRatingFilter, setMinRatingFilter] = useState<number>(0);
+  const [activeMediaHotel, setActiveMediaHotel] = useState<HotelCandidate | null>(null);
+  const [mediaInitialTab, setMediaInitialTab] = useState<"photos" | "map">("photos");
+
+  const openHotelMedia = (hotel: HotelCandidate, tab: "photos" | "map" = "photos", e?: React.MouseEvent) => {
+    if (e) e.stopPropagation();
+    setActiveMediaHotel(hotel);
+    setMediaInitialTab(tab);
+  };
 
   const toggleHotel = (id: string) => {
     const next = new Set(selectedIds);
@@ -133,23 +155,29 @@ export const DiscoveryRadar: React.FC<DiscoveryRadarProps> = ({
             <span className="text-[#1E1E1E]/60 text-[11px]">Check hotels you want CALL-E to dial</span>
           </div>
 
-          <div className="grid grid-cols-1 gap-2.5 max-h-[480px] overflow-y-auto pr-1">
+          <div className="grid grid-cols-1 gap-2.5 max-h-[520px] overflow-y-auto pr-1">
             {filteredCandidates.map((hotel, idx) => {
               const isSelected = selectedIds.has(hotel.id);
               const displayScore = hotel.score ?? (hotel as any).ranking_score ?? 88.5;
+              const photoCount = hotel.photos?.length || (hotel.photo_url ? 1 : 4);
+              const primaryPhoto =
+                hotel.photos?.[0] ||
+                hotel.photo_url ||
+                "https://images.unsplash.com/photo-1571896349842-33c89424de2d?auto=format&fit=crop&w=600&q=80";
+
               return (
                 <div
                   key={hotel.id}
                   onClick={() => toggleHotel(hotel.id)}
-                  className={`flex items-center justify-between p-4 rounded-2xl border transition-all group cursor-pointer ${
+                  className={`flex flex-col sm:flex-row sm:items-center justify-between p-3.5 sm:p-4 rounded-2xl border transition-all group cursor-pointer gap-3 ${
                     isSelected
                       ? "bg-[#FFFDF5] border-[#1E1E1E] shadow-sm ring-1 ring-[#1E1E1E]/20"
-                      : "bg-[#F9F9F0] border-[#EBECDC] opacity-75 hover:opacity-100 hover:border-black/30"
+                      : "bg-[#F9F9F0] border-[#EBECDC] opacity-80 hover:opacity-100 hover:border-black/30"
                   }`}
                 >
-                  <div className="flex items-center gap-3.5">
+                  <div className="flex items-center gap-3 min-w-0">
                     {/* Checkbox */}
-                    <div className="text-[#1E1E1E] transition-transform group-hover:scale-110">
+                    <div className="text-[#1E1E1E] transition-transform group-hover:scale-110 shrink-0">
                       {isSelected ? (
                         <CheckSquare className="w-5 h-5 fill-[#FFD733] text-[#1E1E1E]" />
                       ) : (
@@ -157,29 +185,69 @@ export const DiscoveryRadar: React.FC<DiscoveryRadarProps> = ({
                       )}
                     </div>
 
-                    <span className="w-7 h-7 rounded-xl bg-[#FFD733] text-[#1E1E1E] font-mono text-xs font-black flex items-center justify-center border border-[#1E1E1E]/20 shadow-xs">
+                    <span className="w-7 h-7 rounded-xl bg-[#FFD733] text-[#1E1E1E] font-mono text-xs font-black flex items-center justify-center border border-[#1E1E1E]/20 shadow-xs shrink-0">
                       #{idx + 1}
                     </span>
 
-                    <div>
-                      <h3 className="text-sm font-black text-[#1E1E1E] group-hover:underline flex items-center gap-2">
+                    {/* Photo Thumbnail with Badge */}
+                    <div
+                      onClick={(e) => openHotelMedia(hotel, "photos", e)}
+                      className="relative w-14 h-14 sm:w-16 sm:h-16 rounded-xl overflow-hidden border border-[#1E1E1E]/20 shrink-0 group/photo hover:ring-2 hover:ring-[#FFD733] transition-all"
+                      title="Click to browse hotel photos & live Google Map"
+                    >
+                      <img
+                        src={primaryPhoto}
+                        alt={hotel.name}
+                        className="w-full h-full object-cover group-hover/photo:scale-110 transition-transform duration-300"
+                      />
+                      <div className="absolute inset-0 bg-black/30 group-hover/photo:bg-black/10 transition-colors flex items-center justify-center">
+                        <span className="px-1.5 py-0.5 rounded bg-black/70 text-white font-mono text-[9px] font-bold flex items-center gap-0.5">
+                          <Camera className="w-2.5 h-2.5 text-[#FFD733]" />
+                          {photoCount}
+                        </span>
+                      </div>
+                    </div>
+
+                    <div className="min-w-0 flex-1">
+                      <h3 className="text-sm font-black text-[#1E1E1E] group-hover:underline flex items-center gap-2 truncate">
                         <span>{hotel.name}</span>
                         {isSelected && (
-                          <span className="px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 text-[10px] font-mono font-bold">
+                          <span className="px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 text-[10px] font-mono font-bold shrink-0">
                             Selected
                           </span>
                         )}
                       </h3>
-                      <p className="text-xs text-[#1E1E1E]/70 truncate max-w-xs sm:max-w-md font-mono font-medium flex items-center gap-1 mt-0.5">
+                      <p className="text-xs text-[#1E1E1E]/70 truncate font-mono font-medium flex items-center gap-1 mt-0.5">
                         <MapPin className="w-3 h-3 shrink-0 text-black/40" />
                         <span>{hotel.address}</span>
                       </p>
+
+                      {/* Micro Photo & Map Trigger Pill */}
+                      <div className="flex items-center gap-2 mt-1.5 font-mono text-[11px]">
+                        <button
+                          type="button"
+                          onClick={(e) => openHotelMedia(hotel, "photos", e)}
+                          className="text-[#1E1E1E] hover:text-black font-bold flex items-center gap-1 underline decoration-dotted hover:decoration-solid"
+                        >
+                          <Camera className="w-3 h-3 text-[#1E1E1E]" />
+                          <span>View {photoCount} Photos</span>
+                        </button>
+                        <span className="text-black/30">•</span>
+                        <button
+                          type="button"
+                          onClick={(e) => openHotelMedia(hotel, "map", e)}
+                          className="text-blue-700 hover:text-blue-900 font-bold flex items-center gap-1 underline decoration-dotted hover:decoration-solid"
+                        >
+                          <Compass className="w-3 h-3 text-blue-700" />
+                          <span>Google Map</span>
+                        </button>
+                      </div>
                     </div>
                   </div>
 
-                  <div className="flex items-center gap-3 shrink-0">
-                    <div className="text-right">
-                      <div className="flex items-center gap-1 justify-end text-xs font-black text-[#1E1E1E]">
+                  <div className="flex items-center justify-between sm:justify-end gap-3 shrink-0 pt-2 sm:pt-0 border-t sm:border-t-0 border-[#EBECDC]">
+                    <div className="text-left sm:text-right">
+                      <div className="flex items-center gap-1 justify-start sm:justify-end text-xs font-black text-[#1E1E1E]">
                         <Star className="w-3.5 h-3.5 fill-[#FFD733] text-[#1E1E1E]" />
                         <span>{typeof hotel.rating === "number" ? hotel.rating.toFixed(1) : "4.5"}</span>
                       </div>
@@ -203,7 +271,7 @@ export const DiscoveryRadar: React.FC<DiscoveryRadarProps> = ({
           <div className="flex items-center gap-2 text-xs text-[#1E1E1E]/80 font-mono font-medium">
             <Shield className="w-4 h-4 text-[#1E1E1E] shrink-0" />
             <span>
-              Calls negotiate direct-booking discounts, tax transparency, and free perks.
+              CALL-E dials front desks to negotiate direct rates, verify breakfast, & lock in savings.
             </span>
           </div>
 
@@ -220,13 +288,30 @@ export const DiscoveryRadar: React.FC<DiscoveryRadarProps> = ({
             ) : (
               <span className="flex items-center gap-2">
                 <Phone className="w-4 h-4" />
-                Authorize & Call {selectedIds.size > 0 ? `Selected (${selectedIds.size})` : "Hotels"}
+                <span>Call {selectedIds.size === candidates.length ? "All Discovered" : `Top ${selectedIds.size} Shortlisted`} Hotels</span>
                 <ArrowRight className="w-4 h-4" />
               </span>
             )}
           </button>
         </div>
       </div>
+
+      {/* Hotel Media & Google Maps Modal */}
+      {activeMediaHotel && (
+        <HotelMediaModal
+          isOpen={!!activeMediaHotel}
+          onClose={() => setActiveMediaHotel(null)}
+          hotelName={activeMediaHotel.name}
+          address={activeMediaHotel.address}
+          rating={activeMediaHotel.rating}
+          reviewCount={activeMediaHotel.review_count}
+          photos={activeMediaHotel.photos}
+          photoUrl={activeMediaHotel.photo_url}
+          mapsUrl={activeMediaHotel.maps_url}
+          mapsEmbedUrl={activeMediaHotel.maps_embed_url}
+          initialTab={mediaInitialTab}
+        />
+      )}
     </div>
   );
 };

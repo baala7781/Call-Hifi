@@ -26,9 +26,10 @@ class TripCreate(BaseModel):
     adults: int = Field(default=2, ge=1)
     children: int = Field(default=0, ge=0)
     rooms: int = Field(default=1, ge=1)
-    budget_amount: float = Field(default=50000.0, gt=0)
-    budget_currency: str = Field(default="INR")
+    budget_amount: float = Field(default=600.0, gt=0)
+    budget_currency: str = Field(default="USD")
     min_rating: float | None = 4.0
+    room_type_preference: str = "any"
     breakfast_required: bool = False
     free_cancellation_required: bool = False
     airport_transfer_preferred: bool = False
@@ -55,9 +56,10 @@ class TripRecord(BaseModel):
     adults: int = 2
     children: int = 0
     rooms: int = 1
-    budget_amount: float = 50000.0
-    budget_currency: str = "INR"
+    budget_amount: float = 600.0
+    budget_currency: str = "USD"
     min_rating: float | None = 4.0
+    room_type_preference: str = "any"
     breakfast_required: bool = False
     free_cancellation_required: bool = False
     airport_transfer_preferred: bool = False
@@ -90,6 +92,10 @@ class HotelCandidate(BaseModel):
     score: float = 0.0
     rank: int = 0
     photo_url: str | None = None
+    photos: list[str] = Field(default_factory=list)
+    maps_url: str | None = None
+    maps_embed_url: str | None = None
+    place_id: str | None = None
     discovery_source: str = "curated_regional"
 
 
@@ -136,7 +142,7 @@ class HotelOfferRecord(BaseModel):
     max_guests: int | None = None
     price_per_night: float | None = None
     total_price: float | None = None
-    currency: str = "INR"
+    currency: str = "USD"
     taxes_included: bool | None = None
     mandatory_fees: float | None = None
     breakfast_included: bool | None = None
@@ -161,6 +167,15 @@ class HotelOfferRecord(BaseModel):
     score: float = 0.0
     recommendation_reason: str | None = None
     is_best_deal: bool = False
+    photo_url: str | None = None
+    photos: list[str] = Field(default_factory=list)
+    maps_url: str | None = None
+    maps_embed_url: str | None = None
+    address: str | None = None
+    rating: float | None = None
+    review_count: int | None = None
+    latitude: float | None = None
+    longitude: float | None = None
 
 
 class BookingCreate(BaseModel):
@@ -183,7 +198,7 @@ class BookingRecord(BaseModel):
     failure_reason: str | None = None
     confirmation_notes: str | None = None
     final_amount: float = 0.0
-    currency: str = "INR"
+    currency: str = "USD"
     confirmation_call_task_id: str | None = None
     confirmed_inclusions: list[str] = Field(default_factory=list)
     check_in: str | None = None
@@ -191,6 +206,11 @@ class BookingRecord(BaseModel):
     guests_summary: str | None = None
     created_at: datetime = Field(default_factory=datetime.utcnow)
     confirmed_at: datetime | None = None
+    photo_url: str | None = None
+    photos: list[str] = Field(default_factory=list)
+    maps_url: str | None = None
+    maps_embed_url: str | None = None
+    address: str | None = None
 
 
 class CallStartResponse(BaseModel):

@@ -42,6 +42,11 @@ class BookingService:
             check_out=str(trip.check_out),
             guests_summary=guests_summary,
             confirmed_inclusions=offer.special_benefits or (["Daily breakfast"] if offer.breakfast_included else []),
+            photo_url=offer.photo_url or hotel.photo_url,
+            photos=offer.photos or hotel.photos or ([hotel.photo_url] if hotel.photo_url else []),
+            maps_url=offer.maps_url or hotel.maps_url,
+            maps_embed_url=offer.maps_embed_url or hotel.maps_embed_url,
+            address=offer.address or hotel.address,
         )
         return booking
 

@@ -31,17 +31,17 @@ EXCHANGE_RATES_TO_USD: dict[str, float] = {
 }
 
 
-def convert_currency(amount: float, from_curr: str, to_curr: str) -> float:
+def convert_currency(amount: float, from_curr: str, to_curr: str = "USD") -> float:
     """Converts amounts between currencies accurately."""
     if not amount or amount <= 0:
         return 0.0
     f = (from_curr or "USD").upper().strip()
-    t = (to_curr or "INR").upper().strip()
+    t = (to_curr or "USD").upper().strip()
     if f == t:
         return float(amount)
 
     f_rate = EXCHANGE_RATES_TO_USD.get(f, 1.0)
-    t_rate = EXCHANGE_RATES_TO_USD.get(t, 86.5)
+    t_rate = EXCHANGE_RATES_TO_USD.get(t, 1.0)
 
     usd_val = amount / f_rate
     converted_val = usd_val * t_rate
@@ -68,8 +68,8 @@ def extract_hotel_offer_from_transcript(
         transcript_text = summary or "Call connected. Availability and pricing discussed."
 
     nights = max(1, (trip.check_out - trip.check_in).days)
-    target_currency = trip.budget_currency or "INR"
-    default_budget = trip.budget_amount or 50000.0
+    target_currency = trip.budget_currency or "USD"
+    default_budget = trip.budget_amount or 600.0
 
     logger.info(f"🎙️ [EXTRACTOR START] Hotel: {hotel.name} | Turns count: {len(transcript)} | Target Currency: {target_currency}")
 
@@ -198,6 +198,7 @@ Return ONLY a JSON object:
 
                     result_payload = {
                         "hotel_id": hotel.id,
+                        "hotel_name": hotel.name,
                         "availability": extracted.get("availability", "available"),
                         "room_type": extracted.get("room_type") or "Deluxe Room",
                         "max_guests": trip.adults,
@@ -344,6 +345,7 @@ Return ONLY a JSON object:
 
     fallback_payload = {
         "hotel_id": hotel.id,
+        "hotel_name": hotel.name,
         "availability": "available",
         "room_type": room_type,
         "max_guests": trip.adults,

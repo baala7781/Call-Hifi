@@ -6,7 +6,7 @@ import {
   Calendar,
   Users,
   Bed,
-  IndianRupee,
+  DollarSign,
   Coffee,
   CheckCircle2,
   Plane,
@@ -22,6 +22,7 @@ export interface TripFormData {
   adults: number;
   children: number;
   rooms: number;
+  room_type_preference?: string;
   budget_amount: number;
   budget_currency: string;
   min_rating: number | null;
@@ -49,8 +50,9 @@ export const TripForm: React.FC<TripFormProps> = ({
   const [adults, setAdults] = useState(initialData?.adults || 2);
   const [children, setChildren] = useState(initialData?.children || 0);
   const [rooms, setRooms] = useState(initialData?.rooms || 1);
-  const [budgetAmount, setBudgetAmount] = useState(initialData?.budget_amount || 10000);
-  const [budgetCurrency, setBudgetCurrency] = useState(initialData?.budget_currency || "INR");
+  const [roomTypePreference, setRoomTypePreference] = useState(initialData?.room_type_preference || "any");
+  const [budgetAmount, setBudgetAmount] = useState(initialData?.budget_amount || 600);
+  const [budgetCurrency, setBudgetCurrency] = useState(initialData?.budget_currency || "USD");
   const [minRating, setMinRating] = useState<number | null>(initialData?.min_rating || 4.0);
 
   const [breakfastRequired, setBreakfastRequired] = useState(initialData?.breakfast_required ?? true);
@@ -68,6 +70,7 @@ export const TripForm: React.FC<TripFormProps> = ({
       adults,
       children,
       rooms,
+      room_type_preference: roomTypePreference,
       budget_amount: budgetAmount,
       budget_currency: budgetCurrency,
       min_rating: minRating,
@@ -146,8 +149,8 @@ export const TripForm: React.FC<TripFormProps> = ({
             </div>
           </div>
 
-          {/* Row 2: Guests, Rooms, Budget */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+          {/* Row 2: Guests, Rooms, Room Type, Budget, Rating */}
+          <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
             {/* Adults */}
             <div className="space-y-1.5">
               <label className="text-xs font-bold uppercase tracking-wider text-[#1E1E1E] flex items-center gap-1.5 font-mono">
@@ -184,22 +187,43 @@ export const TripForm: React.FC<TripFormProps> = ({
               </select>
             </div>
 
+            {/* Room Type Preference */}
+            <div className="space-y-1.5">
+              <label className="text-xs font-bold uppercase tracking-wider text-[#1E1E1E] flex items-center gap-1.5 font-mono">
+                <Bed className="w-3.5 h-3.5 text-[#1E1E1E]" /> Room Type
+              </label>
+              <select
+                value={roomTypePreference}
+                onChange={(e) => setRoomTypePreference(e.target.value)}
+                className="w-full bg-[#F9F9F0] border border-[#EBECDC] rounded-xl px-3 py-3 text-sm text-[#1E1E1E] focus:outline-none focus:border-[#FFD733] focus:bg-white cursor-pointer font-medium font-mono text-xs"
+              >
+                <option value="any">Standard / Any</option>
+                <option value="King Bed Room">King Size Room</option>
+                <option value="Executive Suite">Suite / Exec</option>
+                <option value="Deluxe Ocean/Garden View">Deluxe Room</option>
+                <option value="Private Pool Villa">Pool Villa</option>
+              </select>
+            </div>
+
             {/* Total Budget */}
             <div className="space-y-1.5">
               <label className="text-xs font-bold uppercase tracking-wider text-[#1E1E1E] flex items-center gap-1.5 font-mono">
-                <IndianRupee className="w-3.5 h-3.5 text-[#1E1E1E]" /> Max Budget
+                <DollarSign className="w-3.5 h-3.5 text-[#1E1E1E]" /> Max Budget ($)
               </label>
-              <input
-                type="number"
-                min="500"
-                step="500"
-                value={budgetAmount}
-                onChange={(e) => setBudgetAmount(Number(e.target.value))}
-                className="w-full bg-[#F9F9F0] border border-[#EBECDC] rounded-xl px-3 py-3 text-sm text-[#1E1E1E] focus:outline-none focus:border-[#FFD733] focus:bg-white font-mono font-bold"
-              />
+              <div className="relative flex items-center">
+                <span className="absolute left-3 font-mono font-bold text-sm text-[#1E1E1E]">$</span>
+                <input
+                  type="number"
+                  min="50"
+                  step="50"
+                  value={budgetAmount}
+                  onChange={(e) => setBudgetAmount(Number(e.target.value))}
+                  className="w-full bg-[#F9F9F0] border border-[#EBECDC] rounded-xl pl-7 pr-3 py-3 text-sm text-[#1E1E1E] focus:outline-none focus:border-[#FFD733] focus:bg-white font-mono font-bold"
+                />
+              </div>
             </div>
 
-            {/* Currency & Min Rating */}
+            {/* Min Rating */}
             <div className="space-y-1.5">
               <label className="text-xs font-bold uppercase tracking-wider text-[#1E1E1E] flex items-center gap-1.5 font-mono">
                 <Star className="w-3.5 h-3.5 text-[#1E1E1E]" /> Min Rating

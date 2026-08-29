@@ -19,31 +19,30 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onQuickStart }) => {
           <span className="font-black">Call-E</span>
         </div>
 
-        {/* Main Headline from screenshot */}
+        {/* Main Headline */}
         <h1 className="text-4xl sm:text-6xl font-normal tracking-tight text-[#1A1A1A] leading-tight">
-          Automate voice calls <br />
-          to your{" "}
+          Don&apos;t call five hotels. <br />
           <span className="inline-block relative font-normal pb-1">
-            hotels
+            Let HiFi do it.
             <span className="absolute bottom-0 left-0 right-0 h-[4px] bg-gradient-to-r from-[#EBECDC] via-[#A6E9F9] to-[#439CF5] rounded-full" />
           </span>
         </h1>
 
-        {/* Subtitle from screenshot */}
-        <p className="text-base sm:text-lg text-[#1A1A1A]/80 max-w-xl mx-auto font-normal">
-          Sounds realistic. Negotiates direct rates. Drops into any workflow.
+        {/* Subtitle */}
+        <p className="text-base sm:text-lg text-[#1A1A1A]/80 max-w-xl mx-auto font-normal leading-relaxed">
+          HiFi verifies availability, negotiates direct rates, and confirms your stay — autonomously over the phone.
         </p>
 
-        {/* Hero Action Banner from screenshot */}
+        {/* Hero Action Banner */}
         <div className="mt-8 max-w-xl mx-auto p-3 sm:p-4 rounded-2xl bg-white/45 backdrop-blur-xl border border-black/10 flex flex-col sm:flex-row items-center justify-between gap-3 shadow-xs">
           <div className="text-xs sm:text-sm text-[#1A1A1A] font-medium text-center sm:text-left">
-            Ready to test live calls? Fill your trip below.
+            Online listings show rack rates. We call to get direct deals.
           </div>
           <a
             href="#trip-form"
             className="calle-btn-black px-4 py-2.5 text-xs uppercase flex items-center gap-2 whitespace-nowrap cursor-pointer shadow-sm"
           >
-            <span>START CALLING</span>
+            <span>FIND MY BEST DEAL</span>
             <span className="flex items-center gap-0.5 text-[#FFD84D]">
               <span className="w-0.5 h-2 bg-[#FFD84D] rounded-full animate-pulse" />
               <span className="w-0.5 h-3.5 bg-[#FFD84D] rounded-full animate-pulse delay-75" />

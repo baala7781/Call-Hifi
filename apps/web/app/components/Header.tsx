@@ -30,7 +30,7 @@ export const Header: React.FC<HeaderProps> = ({
           setProvider(data.voice_provider);
         }
       })
-      .catch(() => {});
+      .catch(() => { });
   }, []);
 
   return (
@@ -67,7 +67,7 @@ export const Header: React.FC<HeaderProps> = ({
         {/* Center Nav Links */}
         <div className="hidden md:flex items-center gap-8 text-sm text-[#1A1A1A] font-medium">
           <a
-            href="https://www.heycall-e.com/about/"
+            href="http://localhost:3000/"
             target="_blank"
             rel="noopener noreferrer"
             className="hover:opacity-70 transition-opacity"
