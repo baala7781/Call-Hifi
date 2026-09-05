@@ -23,7 +23,7 @@ import { ConfirmationView } from "./components/ConfirmationView";
 import { DebugDrawer } from "./components/DebugDrawer";
 import { TripHistoryDrawer } from "./components/TripHistoryDrawer";
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+const API_BASE_URL = process.env.API_URL || "http://localhost:8000";
 
 export default function Home() {
   // Authentication & Evaluator State

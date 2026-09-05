@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from "react";
 import { Clock, MapPin, Phone, Tag, ChevronRight, X, Loader2 } from "lucide-react";
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+const API_BASE_URL = process.env.API_URL || "http://localhost:8000";
 
 interface TripSummary {
   id: string;
@@ -115,7 +115,7 @@ export function TripHistoryDrawer({ isOpen, onClose, onResume, userEmail }: Trip
                 1,
                 Math.round(
                   (new Date(trip.check_out).getTime() - new Date(trip.check_in).getTime()) /
-                    (1000 * 60 * 60 * 24)
+                  (1000 * 60 * 60 * 24)
                 )
               );
               const isResuming = resumingId === trip.id;

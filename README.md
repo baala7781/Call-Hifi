@@ -30,7 +30,7 @@ npm run dev:api
 npm run dev:web
 ```
 
-The frontend expects `NEXT_PUBLIC_API_URL` to point at the FastAPI app (`http://localhost:8000` by default).
+The frontend expects `API_URL` to point at the FastAPI app (`http://localhost:8000` by default).
 
 ## Demo flow
 

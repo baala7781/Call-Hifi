@@ -8,7 +8,7 @@ interface LoginModalProps {
   onLoginSuccess: (email: string, token: string) => void;
 }
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+const API_BASE_URL = process.env.API_URL || "http://localhost:8000";
 
 export const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onLoginSuccess }) => {
   const [email, setEmail] = useState("");
@@ -47,7 +47,7 @@ export const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onLoginSuccess }
       }
 
       const data = await res.json();
-      
+
       // Store in localStorage
       localStorage.setItem("hifi_user_email", data.email);
       localStorage.setItem("hifi_auth_token", data.token);
