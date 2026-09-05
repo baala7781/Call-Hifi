@@ -14,7 +14,7 @@ class BaseCallProvider(ABC):
     @property
     @abstractmethod
     def provider_name(self) -> str:
-        """Returns unique identifier for the provider (e.g. 'calle', 'cartesia')."""
+        """Returns unique identifier for the provider (e.g. 'calle')."""
         pass
 
     @abstractmethod

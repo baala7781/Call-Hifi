@@ -32,8 +32,6 @@ logger = logging.getLogger("hifi.server")
 async def lifespan(app: FastAPI):
     """Prints rich startup banner showing active voice provider and settings."""
     active_prov = (os.getenv("VOICE_PROVIDER") or settings.voice_provider or "calle").upper()
-    cartesia_key = os.getenv("CARTESIA_API_KEY") or settings.cartesia_api_key or ""
-    cartesia_voice = os.getenv("CARTESIA_VOICE_ID") or settings.cartesia_voice_id or ""
     calle_key = os.getenv("CALLE_API_KEY") or settings.calle_api_key or ""
     phone = os.getenv("TEST_PHONE_NUMBER") or settings.test_phone_number or ""
 
@@ -43,8 +41,6 @@ async def lifespan(app: FastAPI):
 ======================================================================
   🎯 ACTIVE PROVIDER  : {active_prov}
   📞 TARGET PHONE     : {phone}
-  🔑 CARTESIA API KEY : {'PRESENT (' + cartesia_key[:8] + '...)' if cartesia_key else 'NOT CONFIGURED'}
-  🎙️ CARTESIA VOICE ID: {cartesia_voice or 'Default'}
   🔑 CALL-E API KEY   : {'PRESENT (' + calle_key[:8] + '...)' if calle_key else 'NOT CONFIGURED'}
   ⚙️  DEMO MODE        : {settings.demo_mode}
 ======================================================================
@@ -57,7 +53,7 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(
     title=settings.app_name,
-    description="Autonomous AI Hotel Procurement & Negotiation Agent supporting CALL-E and Cartesia voice providers.",
+    description="Autonomous AI Hotel Procurement & Negotiation Agent powered by CALL-E telephony and Google Gemini.",
     version="1.0.0",
     lifespan=lifespan,
 )
@@ -86,18 +82,10 @@ app.include_router(debug_router, prefix=settings.api_prefix)
 @app.get("/api/v1/health")
 async def healthcheck() -> dict[str, Any]:
     """Healthcheck endpoint reporting active voice provider and system status."""
-    active_provider = (os.getenv("VOICE_PROVIDER") or settings.voice_provider or "calle").lower().strip()
-    if "cart" in active_provider or "crte" in active_provider:
-        provider_name = "cartesia"
-    else:
-        provider_name = "calle"
-
     return {
         "status": "ok",
         "app": settings.app_name,
         "demo_mode": str(settings.demo_mode),
-        "voice_provider": provider_name,
-        "cartesia_voice_id": os.getenv("CARTESIA_VOICE_ID") or settings.cartesia_voice_id,
-        "cartesia_configured": bool(os.getenv("CARTESIA_API_KEY") or settings.cartesia_api_key),
+        "voice_provider": "calle",
         "calle_configured": bool(os.getenv("CALLE_API_KEY") or settings.calle_api_key),
     }

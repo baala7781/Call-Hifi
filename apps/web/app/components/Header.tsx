@@ -58,7 +58,7 @@ export const Header: React.FC<HeaderProps> = ({
                 </span>
               </div>
               <span className="text-[11px] font-mono text-[#1A1A1A]/80 hidden sm:inline font-medium">
-                • powered by {provider === "cartesia" ? "Cartesia Sonic" : "CALL-E"}
+                • powered by CALL-E
               </span>
             </div>
           </a>

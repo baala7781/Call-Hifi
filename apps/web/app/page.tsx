@@ -225,11 +225,18 @@ export default function Home() {
           setOffers(data.offers);
         }
 
-        // Auto-transition to offers when backend signals OFFERS_READY or all calls complete and offers exist
-        if ((data.trip_status === "OFFERS_READY" || data.completed_count >= data.call_count) && data.offers && data.offers.length > 0) {
+        // Check if all calls have reached terminal state
+        const allCallsDone =
+          data.calls &&
+          data.calls.length > 0 &&
+          data.calls.every(
+            (c: CallTaskRecord) =>
+              c.status === "completed" || c.status === "failed" || c.status === "no_answer"
+          );
+
+        if (allCallsDone && data.offers && data.offers.length > 0) {
           setOffers(data.offers);
           if (pollingRef.current) clearInterval(pollingRef.current);
-          setStage("offers");
         }
       } catch (err) {
         console.error("Polling error:", err);
@@ -276,8 +283,8 @@ export default function Home() {
     };
   }, [stage, trip, offers.length]);
 
-  const completedCount = calls.filter((c) => c.status === "completed" || c.status === "failed").length;
-  const isAllCallsCompleted = calls.length > 0 && completedCount >= calls.length;
+  const completedCount = calls.filter((c) => c.status === "completed" || c.status === "failed" || c.status === "no_answer").length;
+  const isAllCallsCompleted = calls.length > 0 && calls.every((c) => c.status === "completed" || c.status === "failed" || c.status === "no_answer");
 
   const handleGoToOffers = async () => {
     if (trip) {
@@ -411,7 +418,7 @@ export default function Home() {
               totalCalls={selectedForCallsCount || calls.length || 3}
               destination={trip?.destination || formData.destination}
               onViewOffers={handleGoToOffers}
-              isAllCompleted={isAllCallsCompleted || offers.length > 0}
+              isAllCompleted={isAllCallsCompleted}
             />
           </div>
         )}

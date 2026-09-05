@@ -152,8 +152,8 @@ export const CallDashboard: React.FC<CallDashboardProps> = ({
                     </div>
                   </div>
 
-                  {/* Status pill & Waveform */}
-                  <div className="flex items-center gap-3">
+                  {/* Status pill, Transcript Button & Waveform */}
+                  <div className="flex items-center gap-2.5 flex-wrap">
                     {isCalling && <AudioWaveVisualizer active={true} />}
 
                     <span
@@ -168,20 +168,61 @@ export const CallDashboard: React.FC<CallDashboardProps> = ({
                       {isCalling ? "Live on Phone..." : isCompleted ? "Offer Verified" : "Queued"}
                     </span>
 
+                    {/* Prominent Transcript Toggle Button */}
                     <button
-                      onClick={(e) => { e.stopPropagation(); toggleExpand(call.id); }}
-                      className="text-slate-600 hover:text-black transition-colors p-1 cursor-pointer"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        toggleExpand(call.id);
+                      }}
+                      className={`px-3 py-1.5 rounded-xl text-xs font-mono font-bold flex items-center gap-1.5 transition-all cursor-pointer shadow-xs border ${
+                        isExpanded
+                          ? "bg-[#1E1E1E] text-[#FFD733] border-[#1E1E1E]"
+                          : "bg-white text-[#1E1E1E] border-[#1E1E1E]/20 hover:bg-[#FFD733]"
+                      }`}
                     >
+                      <Volume2 className="w-3.5 h-3.5" />
+                      <span>
+                        {isExpanded
+                          ? "Hide Transcript"
+                          : `Transcript (${call.transcript?.length || 0})`}
+                      </span>
                       {isExpanded ? (
-                        <ChevronUp className="w-4 h-4" />
+                        <ChevronUp className="w-3.5 h-3.5" />
                       ) : (
-                        <ChevronDown className="w-4 h-4" />
+                        <ChevronDown className="w-3.5 h-3.5" />
                       )}
                     </button>
                   </div>
                 </div>
 
-                {/* Evidence & Quote Badges */}
+                {/* Human-Readable Spoken Offer Summary Pill */}
+                {isCompleted && Boolean(call.raw_structured_result) && (
+                  <div className="mx-4 mb-3 p-3 rounded-xl bg-white border border-[#EBECDC] flex flex-wrap items-center justify-between gap-2 text-xs font-mono">
+                    <div className="flex items-center gap-2">
+                      <span className="font-bold text-slate-500 uppercase text-[10px]">Agreed Phone Rate:</span>
+                      <span className="font-black text-sm text-[#1E1E1E]">
+                        {(call.raw_structured_result as any).currency || "USD"}{" "}
+                        {((call.raw_structured_result as any).negotiated_total || (call.raw_structured_result as any).total_price || 0).toLocaleString()}
+                      </span>
+                      {(call.raw_structured_result as any).negotiated_savings > 0 && (
+                        <span className="px-2 py-0.5 rounded-md bg-emerald-100 text-emerald-800 text-[10px] font-bold">
+                          Save {(call.raw_structured_result as any).currency} {((call.raw_structured_result as any).negotiated_savings).toLocaleString()}
+                        </span>
+                      )}
+                    </div>
+
+                    <div className="flex items-center gap-3 text-slate-600 text-[11px]">
+                      {(call.raw_structured_result as any).breakfast_included && (
+                        <span className="font-bold text-emerald-700">✓ Breakfast Included</span>
+                      )}
+                      {(call.raw_structured_result as any).free_cancellation && (
+                        <span className="font-bold text-emerald-700">✓ Free Cancellation</span>
+                      )}
+                    </div>
+                  </div>
+                )}
+
+                {/* Evidence & Spoken Quote Badges */}
                 {call.evidence && call.evidence.length > 0 && (
                   <div className="px-4 pb-3 flex flex-wrap gap-1.5 font-mono">
                     {call.evidence.map((ev: any, eIdx: number) => (
@@ -196,7 +237,7 @@ export const CallDashboard: React.FC<CallDashboardProps> = ({
                   </div>
                 )}
 
-                {/* Structured Raw Notes if available */}
+                {/* Summary Notes */}
                 {isCompleted && Boolean((call.raw_structured_result as any)?.notes) && (
                   <div className="px-4 pb-3 text-xs text-slate-700 font-medium">
                     <span className="font-bold text-[#1E1E1E]">Summary: </span>
@@ -204,33 +245,54 @@ export const CallDashboard: React.FC<CallDashboardProps> = ({
                   </div>
                 )}
 
-                {/* Expandable Live Transcript */}
+                {/* Expandable Live Transcript with Clear Speech Bubbles */}
                 {isExpanded && (
                   <div className="px-4 py-3 bg-[#F9F9F0] border-t border-[#EBECDC] space-y-2.5 text-xs font-mono">
-                    <div className="text-[10px] uppercase tracking-wider text-slate-600 flex items-center gap-1 font-bold">
-                      <Volume2 className="w-3.5 h-3.5 text-[#1E1E1E]" /> Verified Front-Desk Audio Transcript
+                    <div className="flex items-center justify-between pb-1 border-b border-[#EBECDC]">
+                      <div className="text-[10px] uppercase tracking-wider text-slate-600 flex items-center gap-1.5 font-bold">
+                        <Volume2 className="w-3.5 h-3.5 text-[#1E1E1E]" />
+                        <span>Verified Front-Desk Audio Transcript ({call.transcript?.length || 0} spoken turns)</span>
+                      </div>
+                      <span className="text-[10px] text-slate-400 font-mono">CALL-E Live Recording</span>
                     </div>
+
                     {call.transcript && call.transcript.length > 0 ? (
-                      call.transcript.map((turn, tIdx) => {
-                        const isAlex = turn.speaker.toLowerCase().includes("alex") || turn.speaker.toLowerCase().includes("hifi") || turn.speaker.toLowerCase().includes("travel");
-                        return (
-                          <div key={tIdx} className={`p-2.5 rounded-xl leading-relaxed ${isAlex ? "bg-[#FFEB99]/40 border border-[#1E1E1E]/10" : "bg-white border border-[#EBECDC]"}`}>
-                            <span
-                              className={
+                      <div className="space-y-2 max-h-96 overflow-y-auto pr-1">
+                        {call.transcript.map((turn, tIdx) => {
+                          const isAlex =
+                            turn.speaker.toLowerCase().includes("alex") ||
+                            turn.speaker.toLowerCase().includes("hifi") ||
+                            turn.speaker.toLowerCase().includes("travel") ||
+                            turn.speaker.toLowerCase().includes("assistant") ||
+                            turn.speaker.toLowerCase().includes("bot");
+                          return (
+                            <div
+                              key={tIdx}
+                              className={`p-3 rounded-2xl leading-relaxed shadow-xs ${
                                 isAlex
-                                  ? "text-[#1E1E1E] font-black"
-                                  : "text-slate-700 font-bold"
-                              }
+                                  ? "bg-[#FFEB99]/60 border border-[#1E1E1E]/15 ml-4"
+                                  : "bg-white border border-[#EBECDC] mr-4"
+                              }`}
                             >
-                              {turn.speaker}:{" "}
-                            </span>
-                            <span className="text-slate-900">{turn.text}</span>
-                          </div>
-                        );
-                      })
+                              <div className="flex items-center justify-between gap-2 mb-1">
+                                <span
+                                  className={`text-[11px] font-black uppercase ${
+                                    isAlex ? "text-[#1E1E1E]" : "text-emerald-800"
+                                  }`}
+                                >
+                                  {turn.speaker}
+                                </span>
+                              </div>
+                              <p className="text-slate-900 text-xs font-sans leading-relaxed">
+                                {turn.text}
+                              </p>
+                            </div>
+                          );
+                        })}
+                      </div>
                     ) : (
-                      <div className="text-slate-500 italic p-2">
-                        Audio call in progress. Live transcript will update once speech frames are processed.
+                      <div className="text-slate-500 italic p-3 bg-white rounded-xl border border-[#EBECDC]">
+                        Audio call in progress. Speech transcription frames will appear here once audio is received.
                       </div>
                     )}
                   </div>

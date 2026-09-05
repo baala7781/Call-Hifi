@@ -25,7 +25,6 @@ class SettingsUpdateRequest(BaseModel):
     demo_mode: bool | None = None
     test_phone_number: str | None = None
     voice_provider: str | None = None
-    cartesia_voice_id: str | None = None
 
 
 @router.get("")
@@ -35,10 +34,8 @@ async def get_settings() -> dict[str, Any]:
         "demo_mode": is_demo_mode(),
         "test_phone_number": get_test_phone_number(),
         "voice_provider": get_active_voice_provider_name(),
-        "cartesia_voice_id": get_runtime_setting("cartesia_voice_id", settings.cartesia_voice_id),
         "allowed_emails": settings.allowed_emails,
         "calle_configured": bool(settings.calle_api_key),
-        "cartesia_configured": bool(settings.cartesia_api_key),
     }
 
 
@@ -57,9 +54,5 @@ async def update_settings(payload: SettingsUpdateRequest) -> dict[str, Any]:
     if payload.voice_provider is not None:
         set_runtime_setting("voice_provider", payload.voice_provider.lower().strip())
         logger.info(f"Updated runtime voice_provider in SQLite: {payload.voice_provider}")
-
-    if payload.cartesia_voice_id is not None:
-        set_runtime_setting("cartesia_voice_id", payload.cartesia_voice_id.strip())
-        logger.info(f"Updated runtime cartesia_voice_id in SQLite: {payload.cartesia_voice_id}")
 
     return await get_settings()

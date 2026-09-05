@@ -11,6 +11,7 @@ from app.config import settings
 from app.models import CallStartResponse, CallStatusResponse, CallTaskRecord
 from app.services.calle_service import CalleService, sanitize_phone_e164
 from app.services.offer_service import process_trip_offers
+from app.services.runtime_settings import is_demo_mode
 from app.store import db
 
 logger = logging.getLogger(__name__)
@@ -32,12 +33,25 @@ async def run_call_workflow(trip_id: str) -> None:
 
     logger.info(f"🎙️ [CALL WORKFLOW START] Trip {trip_id} | Provider: {active_prov.provider_name.upper()}")
 
-    selected_candidates = candidates[: len(task_records)]
+    # Map candidates by id so we call the exact hotels selected
+    cand_map = {c.id: c for c in candidates}
+    selected_candidates = [cand_map[t.hotel_id] for t in task_records if t.hotel_id in cand_map]
+    if not selected_candidates:
+        selected_candidates = candidates[: len(task_records)]
+
     completed_results: list[dict[str, Any]] = []
+    demo_active = is_demo_mode()
 
     async def _execute_single(idx: int) -> None:
         task_rec = task_records[idx]
-        hotel_cand = selected_candidates[idx]
+        hotel_cand = cand_map.get(task_rec.hotel_id)
+        if not hotel_cand:
+            hotel_cand = selected_candidates[min(idx, len(selected_candidates) - 1)]
+
+        logger.info(f"📞 [CALL {idx + 1}/{len(task_records)}] Starting call for {hotel_cand.name} (ID: {hotel_cand.id})...")
+        task_rec.status = "calling"
+        db.update_task_record(trip.id, task_rec)
+
         try:
             res = await active_prov.execute_discovery_call(
                 task_record=task_rec,
@@ -49,7 +63,7 @@ async def run_call_workflow(trip_id: str) -> None:
                 if not res.get("hotel_id"):
                     res["hotel_id"] = hotel_cand.id
                 completed_results.append(res)
-                # Incrementally update offers in DB so frontend has them immediately
+                # Incrementally update offers in DB so frontend has them
                 current_offers = process_trip_offers(
                     raw_results=completed_results,
                     trip=trip,
@@ -64,8 +78,20 @@ async def run_call_workflow(trip_id: str) -> None:
                 task_rec.status = "completed"
                 db.update_task_record(trip.id, task_rec)
 
-    call_coroutines = [_execute_single(idx) for idx in range(len(task_records))]
-    await asyncio.gather(*call_coroutines, return_exceptions=True)
+        if task_rec.status not in ("completed", "failed", "no_answer"):
+            task_rec.status = "completed"
+            db.update_task_record(trip.id, task_rec)
+
+    if demo_active:
+        logger.info(f"📱 Demo mode active: executing {len(task_records)} calls SEQUENTIALLY to prevent phone collisions...")
+        for idx in range(len(task_records)):
+            await _execute_single(idx)
+            if idx < len(task_records) - 1:
+                logger.info("⏳ Waiting 3 seconds before initiating next queued call in demo mode...")
+                await asyncio.sleep(3.0)
+    else:
+        logger.info(f"🌐 Real calls active: executing {len(task_records)} calls in PARALLEL across hotel trunks...")
+        await asyncio.gather(*[_execute_single(idx) for idx in range(len(task_records))], return_exceptions=True)
 
     # Final normalization & guarantee offers exist
     final_offers = process_trip_offers(
@@ -76,7 +102,7 @@ async def run_call_workflow(trip_id: str) -> None:
     )
     db.offers[trip_id] = final_offers
     trip.status = "OFFERS_READY"
-    logger.info(f"✅ [CALL WORKFLOW COMPLETE] Trip {trip_id} offers generated: {len(final_offers)}")
+    logger.info(f"✅ [CALL WORKFLOW COMPLETE] Trip {trip_id} all {len(task_records)} calls finished. Offers: {len(final_offers)}")
 
 
 class CallStartRequest(BaseModel):
@@ -166,6 +192,22 @@ async def get_call_status(trip_id: str) -> CallStatusResponse:
     tasks = db.call_tasks.get(trip_id, [])
     offers = db.offers.get(trip_id, [])
 
+    # If offers list is empty but ALL tasks are completed with structured results, evaluate offers
+    all_done = len(tasks) > 0 and all(t.status in ("completed", "failed", "no_answer") for t in tasks)
+    if not offers and tasks and all_done:
+        completed_results = [t.raw_structured_result for t in tasks if t.raw_structured_result]
+        if completed_results:
+            candidates = db.candidates.get(trip_id, [])
+            offers = process_trip_offers(
+                raw_results=completed_results,
+                trip=trip,
+                hotels=candidates,
+                tasks=tasks,
+            )
+            db.offers[trip_id] = offers
+            if len(offers) > 0:
+                trip.status = "OFFERS_READY"
+
     completed_count = sum(1 for t in tasks if t.status in ("completed", "failed", "no_answer"))
     best_offer = next((o for o in offers if o.is_best_deal), None)
 
@@ -185,7 +227,7 @@ async def get_call_status(trip_id: str) -> CallStatusResponse:
 
 @router.post("/test-call")
 async def test_call(phone: str | None = None, provider: str | None = None) -> dict[str, Any]:
-    """Test endpoint to trigger an outbound test phone call via active provider (CALL-E or Cartesia)."""
+    """Test endpoint to trigger an outbound test phone call via CALL-E."""
     from app.services.calle_service import get_voice_provider
     active_prov = get_voice_provider(provider)
     target_phone = sanitize_phone_e164(phone or settings.test_phone_number)

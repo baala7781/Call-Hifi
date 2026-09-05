@@ -7,9 +7,7 @@ interface RuntimeSettings {
   demo_mode: boolean;
   test_phone_number: string;
   voice_provider: string;
-  cartesia_voice_id?: string;
   calle_configured: boolean;
-  cartesia_configured: boolean;
 }
 
 interface RuntimeControlBarProps {
@@ -22,7 +20,6 @@ export const RuntimeControlBar: React.FC<RuntimeControlBarProps> = ({ onSettings
     test_phone_number: "+919705730130",
     voice_provider: "calle",
     calle_configured: true,
-    cartesia_configured: true,
   });
   const [phoneInput, setPhoneInput] = useState("+919705730130");
   const [saving, setSaving] = useState(false);
@@ -96,7 +93,7 @@ export const RuntimeControlBar: React.FC<RuntimeControlBarProps> = ({ onSettings
           </div>
         </div>
 
-        {/* Right: Test Phone Input & Voice Engine */}
+        {/* Right: Test Phone Input & Telephony Provider */}
         <div className="flex flex-wrap items-center gap-3">
           {/* Custom Test Phone Number */}
           {settings.demo_mode && (
@@ -129,20 +126,13 @@ export const RuntimeControlBar: React.FC<RuntimeControlBarProps> = ({ onSettings
             </div>
           )}
 
-          {/* Voice Engine Toggle */}
-          <div className="flex items-center gap-1.5 bg-black/40 px-2 py-1 rounded-xl border border-white/10">
-            <Volume2 className="w-3.5 h-3.5 text-white/70" />
-            <span className="text-white/60 text-[11px]">Voice:</span>
-            <button
-              onClick={() =>
-                saveSettings({
-                  voice_provider: settings.voice_provider === "calle" ? "cartesia" : "calle",
-                })
-              }
-              className="px-2 py-0.5 rounded-md bg-white/15 hover:bg-white/25 text-white font-bold uppercase transition-colors cursor-pointer"
-            >
-              {settings.voice_provider === "cartesia" ? "Cartesia Sonic" : "CALL-E"}
-            </button>
+          {/* Voice Engine Telephony */}
+          <div className="flex items-center gap-1.5 bg-black/40 px-2.5 py-1 rounded-xl border border-white/10">
+            <Volume2 className="w-3.5 h-3.5 text-[#FED800]" />
+            <span className="text-white/60 text-[11px]">Telephony:</span>
+            <span className="px-2 py-0.5 rounded-md bg-[#FED800]/20 border border-[#FED800]/40 text-[#FED800] font-bold uppercase text-[11px]">
+              CALL-E
+            </span>
           </div>
         </div>
       </div>

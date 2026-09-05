@@ -54,8 +54,5 @@ def get_test_phone_number() -> str:
 
 
 def get_active_voice_provider_name() -> str:
-    """Returns 'calle' or 'cartesia'."""
-    val = get_runtime_setting("voice_provider", "")
-    if val:
-        return val.lower().strip()
-    return os.getenv("VOICE_PROVIDER", "calle").lower().strip()
+    """Returns 'calle'."""
+    return "calle"

@@ -135,8 +135,8 @@ class CalleProvider(BaseCallProvider):
         task_prompt = self.build_hotel_discovery_task(trip, hotel)
         db.update_task_record(trip.id, task_record)
 
-        # 1. Place live CALL-E phone call for all candidates in production, or candidate 0 in demo mode
-        if self.client is not None and (not demo_active or index == 0):
+        # 1. Place live CALL-E phone call for all sequential candidate tasks
+        if self.client is not None:
             try:
                 logger.info(f"Placing LIVE CALL-E outbound phone call for [{hotel.name}] to {target_phone} (Demo Mode: {demo_active}, Index: {index})...")
 
@@ -153,9 +153,9 @@ class CalleProvider(BaseCallProvider):
                 db.update_task_record(trip.id, task_record)
                 logger.info(f"CALL-E call created with ID: {call_id}. Waiting for live conversation on {target_phone}...")
 
-                # Poll CALL-E until call ends (up to 30s)
+                # Poll CALL-E until call ends (up to 3 minutes / 90 polls of 2s)
                 poll_count = 0
-                max_polls = 15
+                max_polls = 90
                 while poll_count < max_polls:
                     await asyncio.sleep(2.0)
                     poll_count += 1

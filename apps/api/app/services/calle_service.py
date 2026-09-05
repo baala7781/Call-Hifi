@@ -9,28 +9,19 @@ from typing import Any
 from app.config import settings
 from app.services.providers.base import BaseCallProvider
 from app.services.providers.calle_provider import CalleProvider, sanitize_phone_e164
-from app.services.providers.cartesia_provider import CartesiaVoiceProvider
 
 logger = logging.getLogger("hifi.voice")
 
 
 def get_voice_provider(override_name: str | None = None) -> BaseCallProvider:
-    """Factory returning the active voice agent provider based on env configuration."""
-    raw_provider = (override_name or os.getenv("VOICE_PROVIDER") or settings.voice_provider or "calle").lower().strip()
-    
-    # Fuzzy match cartesia vs calle
-    if "cart" in raw_provider or "crte" in raw_provider:
-        provider = CartesiaVoiceProvider()
-        logger.info(f"🎙️ [VOICE ROUTER] Selected Provider: CARTESIA (Voice ID: {provider.voice_id})")
-        return provider
-    
+    """Factory returning the active CALL-E voice agent provider."""
     provider = CalleProvider()
     logger.info("🎙️ [VOICE ROUTER] Selected Provider: CALL-E")
     return provider
 
 
 class CalleService(BaseCallProvider):
-    """Dynamic proxy delegating to whichever voice provider is configured (calle or cartesia)."""
+    """Dynamic proxy delegating to CALL-E telephony provider."""
 
     def __init__(self, override_provider: str | None = None) -> None:
         self.provider: BaseCallProvider = get_voice_provider(override_provider)
@@ -72,7 +63,6 @@ class CalleService(BaseCallProvider):
 __all__ = [
     "BaseCallProvider",
     "CalleProvider",
-    "CartesiaVoiceProvider",
     "CalleService",
     "get_voice_provider",
     "sanitize_phone_e164",

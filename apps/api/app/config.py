@@ -23,16 +23,11 @@ class Settings:
     allowed_emails: str = os.getenv("ALLOWED_EMAILS", "baala3536@gmail.com")
     admin_password: str = os.getenv("ADMIN_PASSWORD", "1234567890")
     
-    # Voice Agent Providers: "calle" or "cartesia"
-    voice_provider: str = os.getenv("VOICE_PROVIDER", "calle").lower().strip()
+    # Voice Agent Provider: "calle"
+    voice_provider: str = "calle"
     
     # CALL-E Credentials
     calle_api_key: str = os.getenv("CALLE_API_KEY", "")
-    
-    # Cartesia Credentials
-    cartesia_api_key: str = os.getenv("CARTESIA_API_KEY", "")
-    cartesia_voice_id: str = os.getenv("CARTESIA_VOICE_ID", "0dc318fb-78af-4ed5-ae5b-b77458a87d0b")
-    cartesia_model_id: str = os.getenv("CARTESIA_MODEL_ID", "sonic-english")
     
     gemini_api_key: str = os.getenv("GEMINI_API_KEY", "")
     api_base_url: str = os.getenv("NEXT_PUBLIC_API_URL", "http://localhost:8000")
