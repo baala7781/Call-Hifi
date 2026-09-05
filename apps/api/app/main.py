@@ -58,14 +58,27 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
-# Enable CORS for Next.js web application and any client
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
+# Configure CORS for Next.js web application and custom domains
+cors_origins_env = os.getenv("CORS_ORIGINS", "").strip()
+if cors_origins_env and cors_origins_env != "*":
+    allowed_origins = [o.strip() for o in cors_origins_env.split(",") if o.strip()]
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=allowed_origins,
+        allow_credentials=True,
+        allow_methods=["*"],
+        allow_headers=["*"],
+        expose_headers=["*"],
+    )
+else:
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origin_regex=r".*",
+        allow_credentials=True,
+        allow_methods=["*"],
+        allow_headers=["*"],
+        expose_headers=["*"],
+    )
 
 # Register API routers under /api/v1
 app.include_router(auth_router, prefix=settings.api_prefix)
