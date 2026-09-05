@@ -22,10 +22,10 @@ import { PaymentModal } from "./components/PaymentModal";
 import { ConfirmationView } from "./components/ConfirmationView";
 import { DebugDrawer } from "./components/DebugDrawer";
 import { TripHistoryDrawer } from "./components/TripHistoryDrawer";
-
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || process.env.API_URL || "http://localhost:8000";
+import { getApiBaseUrl } from "./lib/api";
 
 export default function Home() {
+  const API_BASE_URL = getApiBaseUrl();
   // Authentication & Evaluator State
   const [userEmail, setUserEmail] = useState<string | null>(null);
   const [isLoginOpen, setIsLoginOpen] = useState(false);

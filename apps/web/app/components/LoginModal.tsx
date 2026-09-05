@@ -8,7 +8,7 @@ interface LoginModalProps {
   onLoginSuccess: (email: string, token: string) => void;
 }
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || process.env.API_URL || "http://localhost:8000";
+import { getApiBaseUrl } from "../lib/api";
 
 export const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onLoginSuccess }) => {
   const [email, setEmail] = useState("");
@@ -35,7 +35,7 @@ export const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onLoginSuccess }
     setError(null);
 
     try {
-      const res = await fetch(`${API_BASE_URL}/api/v1/auth/login`, {
+      const res = await fetch(`${getApiBaseUrl()}/api/v1/auth/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email: emailToSubmit, password: pwToSubmit }),

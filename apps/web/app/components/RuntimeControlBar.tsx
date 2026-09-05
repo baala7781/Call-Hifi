@@ -14,7 +14,7 @@ interface RuntimeControlBarProps {
   onSettingsChange?: (settings: RuntimeSettings) => void;
 }
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || process.env.API_URL || "http://localhost:8000";
+import { getApiBaseUrl } from "../lib/api";
 
 export const RuntimeControlBar: React.FC<RuntimeControlBarProps> = ({ onSettingsChange }) => {
   const [settings, setSettings] = useState<RuntimeSettings>({
@@ -29,7 +29,7 @@ export const RuntimeControlBar: React.FC<RuntimeControlBarProps> = ({ onSettings
 
   // Fetch initial settings
   useEffect(() => {
-    fetch(`${API_BASE_URL}/api/v1/settings`)
+    fetch(`${getApiBaseUrl()}/api/v1/settings`)
       .then((res) => res.json())
       .then((data) => {
         setSettings(data);
@@ -42,7 +42,7 @@ export const RuntimeControlBar: React.FC<RuntimeControlBarProps> = ({ onSettings
   const saveSettings = async (updates: Partial<RuntimeSettings>) => {
     setSaving(true);
     try {
-      const res = await fetch(`${API_BASE_URL}/api/v1/settings`, {
+      const res = await fetch(`${getApiBaseUrl()}/api/v1/settings`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(updates),
