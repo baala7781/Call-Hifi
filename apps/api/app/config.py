@@ -30,7 +30,7 @@ class Settings:
     calle_api_key: str = os.getenv("CALLE_API_KEY", "")
     
     gemini_api_key: str = os.getenv("GEMINI_API_KEY", "")
-    api_base_url: str = os.getenv("NEXT_PUBLIC_API_URL", "http://localhost:8000")
+    api_base_url: str = os.getenv("API_URL", "http://localhost:8000")
     test_phone_number: str = os.getenv("TEST_PHONE_NUMBER", "")
 
 
