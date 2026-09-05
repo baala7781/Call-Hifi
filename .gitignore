@@ -6,8 +6,9 @@
 !.env.example
 
 # SQLite Databases & Local Data
-*.db
-*.db-journal
+rumik-drive-package/
+hifi.db
+hifi.db-journal
 *.sqlite
 *.sqlite3
 apps/api/hifi.db
@@ -39,9 +40,10 @@ develop-eggs/
 dist/
 downloads/
 eggs/
-.eggs/
-lib/
-lib64/
+# Python virtual environments & packages
+/lib/
+/lib64/
+!apps/web/app/lib/
 parts/
 sdist/
 var/
