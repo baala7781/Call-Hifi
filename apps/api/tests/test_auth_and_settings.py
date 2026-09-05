@@ -39,12 +39,12 @@ def test_runtime_settings_get_and_post():
         "/api/v1/settings",
         json={
             "demo_mode": True,
-            "test_phone_number": "+919705730130",
+            "test_phone_number": "+15555550123",
             "voice_provider": "calle",
         },
     )
     assert post_res.status_code == 200
     updated = post_res.json()
     assert updated["demo_mode"] is True
-    assert updated["test_phone_number"] == "+919705730130"
+    assert updated["test_phone_number"] == "+15555550123"
     assert updated["voice_provider"] == "calle"

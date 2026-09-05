@@ -28,7 +28,7 @@ def init_sqlite_db() -> None:
             conn.execute("""
                 CREATE TABLE IF NOT EXISTS trips (
                     id TEXT PRIMARY KEY,
-                    user_email TEXT DEFAULT 'baala3536@gmail.com',
+                    user_email TEXT DEFAULT '',
                     destination TEXT NOT NULL,
                     check_in TEXT NOT NULL,
                     check_out TEXT NOT NULL,
@@ -52,7 +52,7 @@ def init_sqlite_db() -> None:
 
             # Migration: Add user_email column if not already present
             try:
-                conn.execute("ALTER TABLE trips ADD COLUMN user_email TEXT DEFAULT 'baala3536@gmail.com'")
+                conn.execute("ALTER TABLE trips ADD COLUMN user_email TEXT DEFAULT ''")
             except Exception:
                 pass
 
@@ -143,7 +143,7 @@ def seed_default_history_if_empty() -> None:
                 conn.execute(
                     """INSERT OR IGNORE INTO trips (id, user_email, destination, check_in, check_out, adults, children, rooms, budget_amount, budget_currency, min_rating, breakfast_required, free_cancellation_required, airport_transfer_preferred, room_upgrade_preferred, late_checkout_preferred, status, data_json, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
                     (
-                        t["id"], t.get("user_email", "baala3536@gmail.com"), t["destination"], t["check_in"], t["check_out"],
+                        t["id"], t.get("user_email", ""), t["destination"], t["check_in"], t["check_out"],
                         t.get("adults", 2), t.get("children", 0), t.get("rooms", 1), t.get("budget_amount", 600.0),
                         t.get("budget_currency", "USD"), t.get("min_rating", 4.0), t.get("breakfast_required", 0),
                         t.get("free_cancellation_required", 0), t.get("airport_transfer_preferred", 0),

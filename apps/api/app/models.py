@@ -35,7 +35,7 @@ class TripCreate(BaseModel):
     airport_transfer_preferred: bool = False
     room_upgrade_preferred: bool = False
     late_checkout_preferred: bool = False
-    user_email: str = "baala3536@gmail.com"
+    user_email: str = ""
 
     @field_validator("check_out")
     @classmethod
@@ -65,7 +65,7 @@ class TripRecord(BaseModel):
     airport_transfer_preferred: bool = False
     room_upgrade_preferred: bool = False
     late_checkout_preferred: bool = False
-    user_email: str = "baala3536@gmail.com"
+    user_email: str = ""
     status: TripStatus = "DRAFT"
     created_at: datetime = Field(default_factory=datetime.utcnow)
     updated_at: datetime = Field(default_factory=datetime.utcnow)
@@ -77,7 +77,7 @@ class HotelCandidate(BaseModel):
     id: str
     name: str
     address: str
-    phone_number: str = "+919705730130"
+    phone_number: str = ""
     rating: float = 4.0
     review_count: int = 100
     website: str | None = None
@@ -113,7 +113,7 @@ class CallTaskRecord(BaseModel):
     trip_id: str
     hotel_id: str
     hotel_name: str
-    phone_number: str = "+919705730130"
+    phone_number: str = ""
     calle_call_id: str | None = None
     purpose: Literal["hotel_negotiation", "booking_confirmation"] = "hotel_negotiation"
     status: Literal["queued", "calling", "completed", "failed", "no_answer"] = "queued"

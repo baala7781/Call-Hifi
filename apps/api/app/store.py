@@ -100,7 +100,7 @@ class PersistentDictStore:
                             """,
                             (
                                 item_id,
-                                getattr(value, "user_email", "baala3536@gmail.com"),
+                                getattr(value, "user_email", ""),
                                 getattr(value, "destination", ""),
                                 str(getattr(value, "check_in", "")),
                                 str(getattr(value, "check_out", "")),

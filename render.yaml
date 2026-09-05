@@ -11,7 +11,7 @@ services:
       - key: DEMO_MODE
         value: "true"
       - key: ALLOWED_EMAILS
-        value: "baala3536@gmail.com,*"
+        value: "*"
       - key: CALLE_API_KEY
         sync: false
       - key: GEMINI_API_KEY
@@ -19,4 +19,4 @@ services:
       - key: GOOGLE_MAPS_API_KEY
         sync: false
       - key: TEST_PHONE_NUMBER
-        value: "+919705730130"
+        sync: false

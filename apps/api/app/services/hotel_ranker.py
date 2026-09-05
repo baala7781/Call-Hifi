@@ -136,7 +136,7 @@ def rank_candidates(raw_hotels: list[dict[str, Any]], trip: TripRecord, limit: i
                 id=hotel.get("id") or f"hotel-{index + 1}",
                 name=hotel.get("name", "Unknown Hotel"),
                 address=hotel.get("address", ""),
-                phone_number=hotel.get("phone_number") or "+919705730130",
+                phone_number=hotel.get("phone_number") or "",
                 rating=rating or 4.0,
                 review_count=hotel.get("review_count") or 100,
                 score=score,

@@ -16,7 +16,7 @@ def test_calle_single_call_format():
     """Verify CALL-E provider single call creation format."""
     prov = CalleProvider()
     result = prov.create_single_call(
-        phone_number="+919705730130",
+        phone_number="+15555550123",
         task="Test CALL-E Voice task",
     )
     assert result["provider"] == "calle"

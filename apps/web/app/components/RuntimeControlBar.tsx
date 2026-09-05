@@ -17,11 +17,11 @@ interface RuntimeControlBarProps {
 export const RuntimeControlBar: React.FC<RuntimeControlBarProps> = ({ onSettingsChange }) => {
   const [settings, setSettings] = useState<RuntimeSettings>({
     demo_mode: true,
-    test_phone_number: "+919705730130",
+    test_phone_number: "",
     voice_provider: "calle",
     calle_configured: true,
   });
-  const [phoneInput, setPhoneInput] = useState("+919705730130");
+  const [phoneInput, setPhoneInput] = useState("");
   const [saving, setSaving] = useState(false);
   const [saveSuccess, setSaveSuccess] = useState(false);
 
@@ -31,7 +31,7 @@ export const RuntimeControlBar: React.FC<RuntimeControlBarProps> = ({ onSettings
       .then((res) => res.json())
       .then((data) => {
         setSettings(data);
-        setPhoneInput(data.test_phone_number || "+919705730130");
+        setPhoneInput(data.test_phone_number || "");
         if (onSettingsChange) onSettingsChange(data);
       })
       .catch(() => {});
@@ -114,7 +114,7 @@ export const RuntimeControlBar: React.FC<RuntimeControlBarProps> = ({ onSettings
                     saveSettings({ test_phone_number: phoneInput });
                   }
                 }}
-                placeholder="+919705730130"
+                placeholder="+15551234567"
                 className="w-32 bg-transparent text-white font-bold text-xs focus:outline-none focus:ring-1 focus:ring-[#FED800] px-1 rounded"
               />
               <button

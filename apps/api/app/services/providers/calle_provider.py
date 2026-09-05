@@ -25,8 +25,8 @@ from app.store import db
 logger = logging.getLogger(__name__)
 
 
-def sanitize_phone_e164(phone: str | None, default: str = "+919705730130") -> str:
-    """Sanitizes phone number into strict E.164 format (e.g., +919705730130)."""
+def sanitize_phone_e164(phone: str | None, default: str = "") -> str:
+    """Sanitizes phone number into strict E.164 format."""
     if not phone:
         return default
     digits_and_plus = "".join(ch for ch in phone if ch.isdigit() or ch == "+")

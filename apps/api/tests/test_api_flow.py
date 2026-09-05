@@ -14,7 +14,22 @@ def test_healthcheck():
     assert response.json()["status"] == "ok"
 
 
-def test_full_hotel_procurement_flow():
+@patch("app.services.providers.calle_provider.CalleProvider.execute_discovery_call")
+@patch("app.services.providers.calle_provider.CalleProvider.create_single_call")
+def test_full_hotel_procurement_flow(mock_create_call, mock_exec_call):
+    mock_create_call.return_value = {
+        "call_id": "test-call-id-123",
+        "status": "queued",
+        "provider": "calle",
+    }
+    mock_exec_call.return_value = {
+        "availability": "available",
+        "room_type": "Standard Room",
+        "total_price": 45000.0,
+        "negotiated_total": 40000.0,
+        "currency": "INR",
+    }
+
     # 1. Create Trip
     trip_payload = {
         "destination": "Bali",
@@ -54,6 +69,6 @@ def test_full_hotel_procurement_flow():
     assert status_data["call_count"] >= 1
 
     # 5. Test Quick Call Endpoint
-    test_call_res = client.post("/api/v1/test-call", json={"phone": "+919705730130"})
+    test_call_res = client.post("/api/v1/test-call", json={"phone": "+15555550123"})
     assert test_call_res.status_code == 200
     assert test_call_res.json()["status"] in ("queued", "completed")

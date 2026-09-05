@@ -74,7 +74,8 @@ export default function Home() {
   // Check auth state on mount
   useEffect(() => {
     const savedEmail = localStorage.getItem("hifi_user_email");
-    if (savedEmail && savedEmail.toLowerCase() === "baala3536@gmail.com") {
+    const savedToken = localStorage.getItem("hifi_auth_token");
+    if (savedEmail && savedToken) {
       setUserEmail(savedEmail);
       setIsLoginOpen(false);
     } else {
@@ -146,7 +147,7 @@ export default function Home() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           ...data,
-          user_email: userEmail || "baala3536@gmail.com",
+          user_email: userEmail || "guest@example.com",
         }),
       });
       if (!tripRes.ok) throw new Error("Failed to create trip");
@@ -178,7 +179,7 @@ export default function Home() {
     voice_provider: string;
   }>({
     demo_mode: false,
-    test_phone_number: "+919705730130",
+    test_phone_number: "",
     voice_provider: "calle",
   });
 

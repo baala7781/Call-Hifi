@@ -35,14 +35,14 @@ def test_candidates_sqlite_persistence():
         id=f"c1-{uuid4().hex[:4]}",
         name="ITC Kohenur",
         address="HITEC City, Hyderabad",
-        phone_number="+919705730130",
+        phone_number="+15555550123",
         rating=4.9,
     )
     cand2 = HotelCandidate(
         id=f"c2-{uuid4().hex[:4]}",
         name="Taj Falaknuma",
         address="Engine Bowli, Hyderabad",
-        phone_number="+919705730130",
+        phone_number="+15555550123",
         rating=4.8,
     )
     db.candidates[trip_id] = [cand1, cand2]

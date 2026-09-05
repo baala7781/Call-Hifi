@@ -50,7 +50,7 @@ def get_test_phone_number() -> str:
     val = get_runtime_setting("test_phone_number", "")
     if val:
         return val
-    return os.getenv("TEST_PHONE_NUMBER", "+919705730130")
+    return os.getenv("TEST_PHONE_NUMBER", "")
 
 
 def get_active_voice_provider_name() -> str:

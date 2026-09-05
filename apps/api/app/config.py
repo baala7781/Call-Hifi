@@ -20,8 +20,8 @@ class Settings:
     google_maps_api_key: str = os.getenv("GOOGLE_MAPS_API_KEY", "")
     
     # Authorized user credentials
-    allowed_emails: str = os.getenv("ALLOWED_EMAILS", "baala3536@gmail.com")
-    admin_password: str = os.getenv("ADMIN_PASSWORD", "1234567890")
+    allowed_emails: str = os.getenv("ALLOWED_EMAILS", "")
+    admin_password: str = os.getenv("ADMIN_PASSWORD", "")
     
     # Voice Agent Provider: "calle"
     voice_provider: str = "calle"
@@ -31,7 +31,7 @@ class Settings:
     
     gemini_api_key: str = os.getenv("GEMINI_API_KEY", "")
     api_base_url: str = os.getenv("NEXT_PUBLIC_API_URL", "http://localhost:8000")
-    test_phone_number: str = os.getenv("TEST_PHONE_NUMBER", "+919705730130")
+    test_phone_number: str = os.getenv("TEST_PHONE_NUMBER", "")
 
 
 settings = Settings()
