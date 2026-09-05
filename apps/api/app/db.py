@@ -123,4 +123,60 @@ def init_sqlite_db() -> None:
         conn.close()
 
 
+def seed_default_history_if_empty() -> None:
+    """Seeds 4 clean, verified historical trips with call transcripts and offers if database is empty upon deployment."""
+    conn = get_db_connection()
+    try:
+        count = conn.execute("SELECT COUNT(*) as c FROM trips").fetchone()["c"]
+        if count > 0:
+            return
+
+        seed_file = Path(__file__).resolve().parent / "seed_history.json"
+        if not seed_file.exists():
+            return
+
+        with open(seed_file, "r") as f:
+            data = json.load(f)
+
+        with conn:
+            for t in data.get("trips", []):
+                conn.execute(
+                    """INSERT OR IGNORE INTO trips (id, user_email, destination, check_in, check_out, adults, children, rooms, budget_amount, budget_currency, min_rating, breakfast_required, free_cancellation_required, airport_transfer_preferred, room_upgrade_preferred, late_checkout_preferred, status, data_json, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
+                    (
+                        t["id"], t.get("user_email", "baala3536@gmail.com"), t["destination"], t["check_in"], t["check_out"],
+                        t.get("adults", 2), t.get("children", 0), t.get("rooms", 1), t.get("budget_amount", 600.0),
+                        t.get("budget_currency", "USD"), t.get("min_rating", 4.0), t.get("breakfast_required", 0),
+                        t.get("free_cancellation_required", 0), t.get("airport_transfer_preferred", 0),
+                        t.get("room_upgrade_preferred", 0), t.get("late_checkout_preferred", 0),
+                        t.get("status", "OFFERS_READY"), t["data_json"], t["created_at"], t["updated_at"]
+                    )
+                )
+            for c in data.get("candidates", []):
+                conn.execute(
+                    """INSERT OR IGNORE INTO candidates (id, trip_id, name, phone_number, rating, data_json) VALUES (?, ?, ?, ?, ?, ?)""",
+                    (c["id"], c["trip_id"], c["name"], c.get("phone_number"), c.get("rating"), c["data_json"])
+                )
+            for ct in data.get("call_tasks", []):
+                conn.execute(
+                    """INSERT OR IGNORE INTO call_tasks (id, trip_id, hotel_id, hotel_name, status, data_json) VALUES (?, ?, ?, ?, ?, ?)""",
+                    (ct["id"], ct["trip_id"], ct["hotel_id"], ct["hotel_name"], ct["status"], ct["data_json"])
+                )
+            for o in data.get("offers", []):
+                conn.execute(
+                    """INSERT OR IGNORE INTO offers (id, trip_id, hotel_id, total_price, negotiated_total, data_json) VALUES (?, ?, ?, ?, ?, ?)""",
+                    (o["id"], o["trip_id"], o["hotel_id"], o.get("total_price"), o.get("negotiated_total"), o["data_json"])
+                )
+            for b in data.get("bookings", []):
+                conn.execute(
+                    """INSERT OR IGNORE INTO bookings (id, trip_id, hotel_id, confirmation_status, data_json) VALUES (?, ?, ?, ?, ?)""",
+                    (b["id"], b["trip_id"], b["hotel_id"], b["confirmation_status"], b["data_json"])
+                )
+        logger.info("Successfully seeded verified historical calls/trips into SQLite.")
+    except Exception as e:
+        logger.warning(f"Failed to seed default history: {e}")
+    finally:
+        conn.close()
+
+
 init_sqlite_db()
+seed_default_history_if_empty()
