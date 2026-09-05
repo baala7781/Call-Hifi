@@ -14,5 +14,9 @@
     "build:web": "npm --workspace apps/web run build",
     "test:api": "cd apps/api && python3 -m pytest tests -v"
   },
-  "packageManager": "npm@10.9.2"
+  "packageManager": "npm@10.9.2",
+  "optionalDependencies": {
+    "lightningcss-linux-x64-gnu": "1.32.0",
+    "lightningcss-linux-x64-musl": "1.32.0"
+  }
 }
