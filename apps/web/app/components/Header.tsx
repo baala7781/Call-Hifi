@@ -12,6 +12,8 @@ interface HeaderProps {
   onLogout?: () => void;
 }
 
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || process.env.API_URL || "http://localhost:8000";
+
 export const Header: React.FC<HeaderProps> = ({
   onOpenDebug,
   onOpenHistory,
@@ -23,7 +25,7 @@ export const Header: React.FC<HeaderProps> = ({
   const [provider, setProvider] = useState<string>("calle");
 
   useEffect(() => {
-    fetch("http://localhost:8000/api/v1/health")
+    fetch(`${API_BASE_URL}/api/v1/health`)
       .then((res) => res.json())
       .then((data) => {
         if (data.voice_provider) {

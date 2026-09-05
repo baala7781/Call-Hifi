@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from "react";
 import { Clock, MapPin, Phone, Tag, ChevronRight, X, Loader2 } from "lucide-react";
 
-const API_BASE_URL = process.env.API_URL || "http://localhost:8000";
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || process.env.API_URL || "http://localhost:8000";
 
 interface TripSummary {
   id: string;

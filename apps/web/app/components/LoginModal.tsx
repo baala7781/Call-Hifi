@@ -8,7 +8,7 @@ interface LoginModalProps {
   onLoginSuccess: (email: string, token: string) => void;
 }
 
-const API_BASE_URL = process.env.API_URL || "http://localhost:8000";
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || process.env.API_URL || "http://localhost:8000";
 
 export const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onLoginSuccess }) => {
   const [email, setEmail] = useState("");
