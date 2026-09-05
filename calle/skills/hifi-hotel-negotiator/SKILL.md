@@ -1,8 +1,7 @@
 ---
 name: hifi-hotel-negotiator
-description: >
-  Autonomous voice AI agent skill for hotel procurement, direct-booking rate negotiation,
-  and reservation confirmation over the phone using CALL-E.
+description: Autonomous voice AI agent skill for hotel procurement, direct-booking rate negotiation, and reservation confirmation over the phone using CALL-E.
+license: MIT
 ---
 
 # HiFi Hotel Negotiator
@@ -13,16 +12,16 @@ description: >
 
 ## Supported Call Modes
 
-1. **Discovery & Verification Call**: Verify exact dates, room occupancy, nightly/total rates, breakfast cost, airport transfers, and cancellation terms.
-2. **Direct Rate Negotiation**: Politely inquire about preferential direct rates, complimentary breakfast, free airport shuttles, or complimentary room upgrades.
-3. **Reservation Confirmation Call**: Re-verify negotiated rate, dates, and inclusions with the front desk and obtain the official booking reference number.
+1. **Discovery & Verification Call**: Verify exact dates, room occupancy, nightly/total rates, breakfast cost, airport transfers, and cancellation terms. See `references/hotel-discovery.md`.
+2. **Direct Rate Negotiation**: Politely inquire about preferential direct rates, complimentary breakfast, free airport shuttles, or complimentary room upgrades. See `references/negotiation-policy.md`.
+3. **Reservation Confirmation Call**: Re-verify negotiated rate, dates, and inclusions with the front desk and obtain the official booking reference number. See `references/confirmation-policy.md`.
 
 ## Required Call Inputs
 
 | Input Field | Type | Description | Example |
 | :--- | :--- | :--- | :--- |
 | `hotel_name` | String | Official hotel name | `"Ocean Pearl Resort"` |
-| `hotel_phone` | String (E.164) | Validated hotel front-desk phone | `"+91 98765 43210"` |
+| `hotel_phone` | String (E.164) | Validated hotel front-desk phone | `"+15550101234"` |
 | `check_in` | ISO Date | Arrival date | `"2026-10-12"` |
 | `check_out` | ISO Date | Departure date | `"2026-10-17"` |
 | `adults` | Integer | Number of adult guests | `2` |
@@ -56,12 +55,17 @@ The voice agent must explicitly verify:
 - **Strict Budget Ceiling**: Never agree to or quote any rate exceeding the traveler's configured `budget_cap`.
 - **Zero Payment Disclosure**: Never disclose credit card numbers or financial credentials during discovery.
 
-## Output Contract
+## Output Contract & Validation
 
-Calls must return a schema-valid JSON object adhering to [`references/result-schema.md`](file:///Users/baala/Documents/Projects/Call-E/calle/skills/hifi-hotel-negotiator/references/result-schema.md).
+Calls must return a schema-valid JSON object adhering to `references/result-schema.md`. Use `scripts/validate_offer.py` to validate structured outputs against business constraints.
+
+See `references/examples.md` for end-to-end conversation transcripts and result payloads.
 
 ## Safety & Boundaries
+
+Read `references/safety.md` for full safety, privacy, and consent requirements.
 
 1. **Explicit Consent**: Real-world phone calls are only placed after user action.
 2. **No Data Fabrication**: If a field was not discussed or confirmed by the receptionist, return `null` — never assume `false` or invent numbers.
 3. **Confirmation Guardrail**: A reservation is only marked confirmed if the hotel explicitly issues a valid booking reference number.
+

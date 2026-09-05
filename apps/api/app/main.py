@@ -34,13 +34,14 @@ async def lifespan(app: FastAPI):
     active_prov = (os.getenv("VOICE_PROVIDER") or settings.voice_provider or "calle").upper()
     calle_key = os.getenv("CALLE_API_KEY") or settings.calle_api_key or ""
     phone = os.getenv("TEST_PHONE_NUMBER") or settings.test_phone_number or ""
+    masked_phone = f"{phone[:2]}******{phone[-4:]}" if len(phone) >= 6 else (phone or "NOT SET")
 
     banner = f"""
 ======================================================================
   🎙️  HIFI VOICE AGENT ENGINE - READY
 ======================================================================
   🎯 ACTIVE PROVIDER  : {active_prov}
-  📞 TARGET PHONE     : {phone}
+  📞 TARGET PHONE     : {masked_phone}
   🔑 CALL-E API KEY   : {'PRESENT (' + calle_key[:8] + '...)' if calle_key else 'NOT CONFIGURED'}
   ⚙️  DEMO MODE        : {settings.demo_mode}
 ======================================================================

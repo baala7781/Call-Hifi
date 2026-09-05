@@ -147,7 +147,9 @@ export const CallDashboard: React.FC<CallDashboardProps> = ({
                         )}
                       </div>
                       <p className="text-xs text-[#1E1E1E]/70 font-mono font-medium truncate">
-                        {call.phone_number || "Direct Hotel Trunk"} • {call.purpose.replace("_", " ")}
+                        {call.phone_number && call.phone_number.length >= 6
+                          ? `${call.phone_number.slice(0, 2)}******${call.phone_number.slice(-4)}`
+                          : (call.phone_number || "Direct Hotel Trunk")} • {call.purpose.replace("_", " ")}
                       </p>
                     </div>
                   </div>

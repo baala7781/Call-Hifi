@@ -38,9 +38,17 @@ def sanitize_phone_e164(phone: str | None, default: str = "") -> str:
         return "+91" + digits_and_plus[1:]
     if len(digits_and_plus) == 10:
         return "+91" + digits_and_plus
-    if len(digits_and_plus) == 12 and digits_and_plus.startswith("91"):
-        return "+" + digits_and_plus
     return "+" + digits_and_plus
+
+
+def mask_phone(phone: str | None) -> str:
+    """Masks phone number for privacy compliance in logs (e.g. +1******1234)."""
+    if not phone:
+        return "+******"
+    cleaned = "".join(ch for ch in phone if ch.isdigit() or ch == "+")
+    if len(cleaned) < 6:
+        return "+******"
+    return f"{cleaned[:2]}******{cleaned[-4:]}"
 
 
 class CalleProvider(BaseCallProvider):
@@ -143,7 +151,8 @@ class CalleProvider(BaseCallProvider):
         # 1. Place live CALL-E phone call for all sequential candidate tasks
         if self.client is not None:
             try:
-                logger.info(f"Placing LIVE CALL-E outbound phone call for [{hotel.name}] to {target_phone} (Demo Mode: {demo_active}, Index: {index})...")
+                masked_target = mask_phone(target_phone)
+                logger.info(f"Placing LIVE CALL-E outbound phone call for [{hotel.name}] to {masked_target} (Demo Mode: {demo_active}, Index: {index})...")
 
                 locale_val = "en-IN" if target_phone.startswith("+91") else "en-US"
                 region_val = "IN" if target_phone.startswith("+91") else "US"
@@ -156,7 +165,7 @@ class CalleProvider(BaseCallProvider):
                 call_id = getattr(call_obj, "id", None) if hasattr(call_obj, "id") else call_obj.get("id")
                 task_record.calle_call_id = call_id
                 db.update_task_record(trip.id, task_record)
-                logger.info(f"CALL-E call created with ID: {call_id}. Waiting for live conversation on {target_phone}...")
+                logger.info(f"CALL-E call created with ID: {call_id}. Waiting for live conversation on {masked_target}...")
 
                 # Poll CALL-E until call ends (up to 3 minutes / 90 polls of 2s)
                 poll_count = 0
@@ -237,7 +246,7 @@ class CalleProvider(BaseCallProvider):
 
                             task_record.raw_structured_result = extracted_offer
                             task_record.evidence = extracted_offer.get("evidence", [
-                                f"Live CALL-E phone conversation completed on {target_phone}",
+                                f"Live CALL-E phone conversation completed on {mask_phone(target_phone)}",
                                 f"Summary: {call_summary}",
                             ])
                             db.update_task_record(trip.id, task_record)
@@ -351,7 +360,8 @@ class CalleProvider(BaseCallProvider):
 
         if self.client is not None:
             try:
-                logger.info(f"Placing LIVE CALL-E confirmation call to {target_phone} for {hotel.name}...")
+                masked_target = mask_phone(target_phone)
+                logger.info(f"Placing LIVE CALL-E confirmation call to {masked_target} for {hotel.name}...")
                 locale_val = "en-IN" if target_phone.startswith("+91") else "en-US"
                 region_val = "IN" if target_phone.startswith("+91") else "US"
                 call_obj = self.client.calls.create(
