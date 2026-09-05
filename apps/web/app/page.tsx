@@ -22,6 +22,7 @@ import { PaymentModal } from "./components/PaymentModal";
 import { ConfirmationView } from "./components/ConfirmationView";
 import { DebugDrawer } from "./components/DebugDrawer";
 import { TripHistoryDrawer } from "./components/TripHistoryDrawer";
+import { DemoPhoneModal } from "./components/DemoPhoneModal";
 import { getApiBaseUrl } from "./lib/api";
 
 export default function Home() {
@@ -183,8 +184,11 @@ export default function Home() {
     voice_provider: "calle",
   });
 
-  // Step 2: Start CALL-E Outbound Calls with selected hotel IDs
-  const handleStartCalls = async (selectedHotelIds?: string[]) => {
+  const [isDemoPhoneOpen, setIsDemoPhoneOpen] = useState(false);
+  const [pendingHotelIds, setPendingHotelIds] = useState<string[] | undefined>(undefined);
+
+  // Core execution helper for starting calls
+  const proceedWithCalls = async (selectedHotelIds?: string[], testPhoneOverride?: string) => {
     if (!trip) return;
     setLoading(true);
     try {
@@ -195,19 +199,46 @@ export default function Home() {
         body: JSON.stringify({
           hotel_ids: selectedHotelIds,
           demo_mode: runtimeSettings.demo_mode,
-          test_phone_number: runtimeSettings.test_phone_number,
+          test_phone_number: testPhoneOverride || runtimeSettings.test_phone_number,
         }),
       });
-      if (!callRes.ok) throw new Error("Failed to start calls");
+      if (!callRes.ok) {
+        const errData = await callRes.json().catch(() => ({}));
+        throw new Error(errData?.detail || "Failed to start calls");
+      }
 
       setStage("calling");
       startPolling(trip.id);
-    } catch (err) {
+    } catch (err: any) {
       console.error(err);
-      alert("Failed to start hotel calls.");
+      alert(err?.message || "Failed to start hotel calls.");
     } finally {
       setLoading(false);
     }
+  };
+
+  // Step 2: Start CALL-E Outbound Calls with selected hotel IDs
+  const handleStartCalls = async (selectedHotelIds?: string[]) => {
+    if (!trip) return;
+
+    // Safety Safeguard: In Demo Mode, require that a test phone number is provided!
+    if (
+      runtimeSettings.demo_mode &&
+      (!runtimeSettings.test_phone_number || !runtimeSettings.test_phone_number.trim())
+    ) {
+      setPendingHotelIds(selectedHotelIds);
+      setIsDemoPhoneOpen(true);
+      return;
+    }
+
+    await proceedWithCalls(selectedHotelIds);
+  };
+
+  const handleDemoPhoneSaved = (phoneNumber: string) => {
+    setRuntimeSettings((prev) => ({ ...prev, test_phone_number: phoneNumber, demo_mode: true }));
+    setIsDemoPhoneOpen(false);
+    // Proceed immediately with the calls using the confirmed phone number
+    proceedWithCalls(pendingHotelIds, phoneNumber);
   };
 
   // Step 3: Poll Real-time Status
@@ -383,10 +414,10 @@ export default function Home() {
       />
 
       {/* Main Experience Body */}
-      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <main className="flex-1 max-w-7xl w-full mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-8">
         {/* Step 1: Form & Hero */}
         {stage === "form" && (
-          <div className="space-y-6">
+          <div className="space-y-4 sm:space-y-6">
             <HeroSection />
             <TripForm
               initialData={formData}
@@ -471,6 +502,14 @@ export default function Home() {
         onClose={() => setIsPaymentOpen(false)}
         onPayAndConfirm={handlePayAndConfirm}
         isLoading={loading}
+      />
+
+      {/* Demo Mode Safety Phone Number Modal */}
+      <DemoPhoneModal
+        isOpen={isDemoPhoneOpen}
+        onClose={() => setIsDemoPhoneOpen(false)}
+        onSaved={handleDemoPhoneSaved}
+        currentPhoneNumber={runtimeSettings.test_phone_number}
       />
 
       {/* Technical Debug Inspector Drawer */}

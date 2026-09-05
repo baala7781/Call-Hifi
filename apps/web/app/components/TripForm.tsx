@@ -84,15 +84,15 @@ export const TripForm: React.FC<TripFormProps> = ({
 
   return (
     <div className="w-full max-w-4xl mx-auto">
-      <div className="calle-card rounded-3xl p-6 sm:p-8 shadow-xl relative overflow-hidden bg-white">
-        <div className="flex items-center justify-between pb-6 border-b border-[#EBECDC] mb-6">
+      <div className="calle-card rounded-3xl p-5 sm:p-8 shadow-xl relative overflow-hidden bg-white">
+        <div className="flex items-center justify-between pb-5 sm:pb-6 border-b border-[#EBECDC] mb-5 sm:mb-6">
           <div>
-            <h2 className="text-xl font-black text-[#1E1E1E] flex items-center gap-2 font-mono">
+            <h2 className="text-lg sm:text-xl font-black text-[#1E1E1E] flex items-center gap-2 font-mono">
               <Sparkles className="w-5 h-5 text-[#FFD733] fill-[#FFD733]" />
-              <span>Configure Trip & Procurement Scope</span>
+              <span>Configure Trip & Scope</span>
             </h2>
             <p className="text-xs text-[#1E1E1E]/70 mt-1 font-medium">
-              HiFi will discover top-ranked hotels and autonomously call to negotiate direct rates.
+              HiFi will discover top hotels and autonomously call to negotiate direct rates.
             </p>
           </div>
           <span className="hidden sm:inline-block px-3 py-1 rounded-full text-xs font-mono bg-[#FFD733] text-[#1E1E1E] border border-[#EBECDC] font-bold">
@@ -100,9 +100,9 @@ export const TripForm: React.FC<TripFormProps> = ({
           </span>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-6">
+        <form onSubmit={handleSubmit} className="space-y-5 sm:space-y-6">
           {/* Row 1: Destination & Dates */}
-          <div className="grid grid-cols-1 md:grid-cols-12 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-12 gap-3 sm:gap-4">
             {/* Destination */}
             <div className="md:col-span-6 space-y-1.5">
               <label className="text-xs font-bold uppercase tracking-wider text-[#1E1E1E] flex items-center gap-1.5 font-mono">
@@ -115,42 +115,44 @@ export const TripForm: React.FC<TripFormProps> = ({
                   value={destination}
                   onChange={(e) => setDestination(e.target.value)}
                   placeholder="e.g. Hyderabad, Bali, Goa, Tokyo"
-                  className="w-full bg-[#F9F9F0] border border-[#EBECDC] rounded-xl px-4 py-3 text-sm text-[#1E1E1E] placeholder-slate-400 focus:outline-none focus:border-[#FFD733] focus:bg-white transition-colors font-medium"
+                  className="w-full bg-[#F9F9F0] border border-[#EBECDC] rounded-xl px-4 py-3 text-base sm:text-sm text-[#1E1E1E] placeholder-slate-400 focus:outline-none focus:border-[#FFD733] focus:bg-white transition-colors font-medium"
                 />
               </div>
             </div>
 
             {/* Check-in */}
-            <div className="md:col-span-3 space-y-1.5">
-              <label className="text-xs font-bold uppercase tracking-wider text-[#1E1E1E] flex items-center gap-1.5 font-mono">
-                <Calendar className="w-3.5 h-3.5 text-[#1E1E1E]" /> Check-in
-              </label>
-              <input
-                type="date"
-                required
-                value={checkIn}
-                onChange={(e) => setCheckIn(e.target.value)}
-                className="w-full bg-[#F9F9F0] border border-[#EBECDC] rounded-xl px-3 py-3 text-sm text-[#1E1E1E] focus:outline-none focus:border-[#FFD733] focus:bg-white transition-colors font-medium"
-              />
-            </div>
+            <div className="grid grid-cols-2 gap-2.5 md:contents">
+              <div className="md:col-span-3 space-y-1.5">
+                <label className="text-xs font-bold uppercase tracking-wider text-[#1E1E1E] flex items-center gap-1.5 font-mono">
+                  <Calendar className="w-3.5 h-3.5 text-[#1E1E1E]" /> Check-in
+                </label>
+                <input
+                  type="date"
+                  required
+                  value={checkIn}
+                  onChange={(e) => setCheckIn(e.target.value)}
+                  className="w-full bg-[#F9F9F0] border border-[#EBECDC] rounded-xl px-2.5 sm:px-3 py-3 text-base sm:text-sm text-[#1E1E1E] focus:outline-none focus:border-[#FFD733] focus:bg-white transition-colors font-medium"
+                />
+              </div>
 
-            {/* Check-out */}
-            <div className="md:col-span-3 space-y-1.5">
-              <label className="text-xs font-bold uppercase tracking-wider text-[#1E1E1E] flex items-center gap-1.5 font-mono">
-                <Calendar className="w-3.5 h-3.5 text-[#1E1E1E]" /> Check-out
-              </label>
-              <input
-                type="date"
-                required
-                value={checkOut}
-                onChange={(e) => setCheckOut(e.target.value)}
-                className="w-full bg-[#F9F9F0] border border-[#EBECDC] rounded-xl px-3 py-3 text-sm text-[#1E1E1E] focus:outline-none focus:border-[#FFD733] focus:bg-white transition-colors font-medium"
-              />
+              {/* Check-out */}
+              <div className="md:col-span-3 space-y-1.5">
+                <label className="text-xs font-bold uppercase tracking-wider text-[#1E1E1E] flex items-center gap-1.5 font-mono">
+                  <Calendar className="w-3.5 h-3.5 text-[#1E1E1E]" /> Check-out
+                </label>
+                <input
+                  type="date"
+                  required
+                  value={checkOut}
+                  onChange={(e) => setCheckOut(e.target.value)}
+                  className="w-full bg-[#F9F9F0] border border-[#EBECDC] rounded-xl px-2.5 sm:px-3 py-3 text-base sm:text-sm text-[#1E1E1E] focus:outline-none focus:border-[#FFD733] focus:bg-white transition-colors font-medium"
+                />
+              </div>
             </div>
           </div>
 
           {/* Row 2: Guests, Rooms, Room Type, Budget, Rating */}
-          <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
             {/* Adults */}
             <div className="space-y-1.5">
               <label className="text-xs font-bold uppercase tracking-wider text-[#1E1E1E] flex items-center gap-1.5 font-mono">
@@ -159,7 +161,7 @@ export const TripForm: React.FC<TripFormProps> = ({
               <select
                 value={adults}
                 onChange={(e) => setAdults(Number(e.target.value))}
-                className="w-full bg-[#F9F9F0] border border-[#EBECDC] rounded-xl px-3 py-3 text-sm text-[#1E1E1E] focus:outline-none focus:border-[#FFD733] focus:bg-white cursor-pointer font-medium"
+                className="w-full bg-[#F9F9F0] border border-[#EBECDC] rounded-xl px-3 py-3 text-base sm:text-sm text-[#1E1E1E] focus:outline-none focus:border-[#FFD733] focus:bg-white cursor-pointer font-medium"
               >
                 {[1, 2, 3, 4, 5, 6].map((n) => (
                   <option key={n} value={n}>
@@ -177,7 +179,7 @@ export const TripForm: React.FC<TripFormProps> = ({
               <select
                 value={rooms}
                 onChange={(e) => setRooms(Number(e.target.value))}
-                className="w-full bg-[#F9F9F0] border border-[#EBECDC] rounded-xl px-3 py-3 text-sm text-[#1E1E1E] focus:outline-none focus:border-[#FFD733] focus:bg-white cursor-pointer font-medium"
+                className="w-full bg-[#F9F9F0] border border-[#EBECDC] rounded-xl px-3 py-3 text-base sm:text-sm text-[#1E1E1E] focus:outline-none focus:border-[#FFD733] focus:bg-white cursor-pointer font-medium"
               >
                 {[1, 2, 3, 4].map((n) => (
                   <option key={n} value={n}>
@@ -195,7 +197,7 @@ export const TripForm: React.FC<TripFormProps> = ({
               <select
                 value={roomTypePreference}
                 onChange={(e) => setRoomTypePreference(e.target.value)}
-                className="w-full bg-[#F9F9F0] border border-[#EBECDC] rounded-xl px-3 py-3 text-sm text-[#1E1E1E] focus:outline-none focus:border-[#FFD733] focus:bg-white cursor-pointer font-medium font-mono text-xs"
+                className="w-full bg-[#F9F9F0] border border-[#EBECDC] rounded-xl px-2.5 py-3 text-base sm:text-xs text-[#1E1E1E] focus:outline-none focus:border-[#FFD733] focus:bg-white cursor-pointer font-medium font-mono"
               >
                 <option value="any">Standard / Any</option>
                 <option value="King Bed Room">King Size Room</option>
@@ -218,20 +220,20 @@ export const TripForm: React.FC<TripFormProps> = ({
                   step="50"
                   value={budgetAmount}
                   onChange={(e) => setBudgetAmount(Number(e.target.value))}
-                  className="w-full bg-[#F9F9F0] border border-[#EBECDC] rounded-xl pl-7 pr-3 py-3 text-sm text-[#1E1E1E] focus:outline-none focus:border-[#FFD733] focus:bg-white font-mono font-bold"
+                  className="w-full bg-[#F9F9F0] border border-[#EBECDC] rounded-xl pl-7 pr-3 py-3 text-base sm:text-sm text-[#1E1E1E] focus:outline-none focus:border-[#FFD733] focus:bg-white font-mono font-bold"
                 />
               </div>
             </div>
 
-            {/* Min Rating */}
-            <div className="space-y-1.5">
+            {/* Min Rating (spans 2 cols on mobile so there's no orphan) */}
+            <div className="space-y-1.5 col-span-2 sm:col-span-1 lg:col-span-1">
               <label className="text-xs font-bold uppercase tracking-wider text-[#1E1E1E] flex items-center gap-1.5 font-mono">
                 <Star className="w-3.5 h-3.5 text-[#1E1E1E]" /> Min Rating
               </label>
               <select
                 value={minRating || ""}
                 onChange={(e) => setMinRating(e.target.value ? Number(e.target.value) : null)}
-                className="w-full bg-[#F9F9F0] border border-[#EBECDC] rounded-xl px-3 py-3 text-sm text-[#1E1E1E] focus:outline-none focus:border-[#FFD733] focus:bg-white cursor-pointer font-medium"
+                className="w-full bg-[#F9F9F0] border border-[#EBECDC] rounded-xl px-3 py-3 text-base sm:text-sm text-[#1E1E1E] focus:outline-none focus:border-[#FFD733] focus:bg-white cursor-pointer font-medium"
               >
                 <option value="">Any Rating</option>
                 <option value="4.0">★ 4.0 & above</option>

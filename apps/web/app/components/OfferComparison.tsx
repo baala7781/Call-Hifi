@@ -67,19 +67,19 @@ export const OfferComparison: React.FC<OfferComparisonProps> = ({
   };
 
   return (
-    <div className="w-full max-w-5xl mx-auto space-y-6">
+    <div className="w-full max-w-5xl mx-auto space-y-5 sm:space-y-6">
       {/* Top AI Recommendation Spotlight Banner */}
       {bestOffer && (
-        <div className="calle-card rounded-3xl p-6 sm:p-8 relative overflow-hidden bg-[#FFD733] border-2 border-[#1E1E1E] shadow-xl space-y-5">
-          <div className="flex flex-col md:flex-row md:items-start justify-between gap-6">
-            <div className="space-y-3.5 flex-1">
-              <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-[#1E1E1E] text-[#FFD733] text-xs font-mono font-black uppercase tracking-wider">
-                <Award className="w-4 h-4 text-[#FFD733]" />
+        <div className="calle-card rounded-3xl p-5 sm:p-8 relative overflow-hidden bg-[#FFD733] border-2 border-[#1E1E1E] shadow-xl space-y-4 sm:space-y-5">
+          <div className="flex flex-col md:flex-row md:items-start justify-between gap-5 sm:gap-6">
+            <div className="space-y-3 sm:space-y-3.5 flex-1 min-w-0">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#1E1E1E] text-[#FFD733] text-xs font-mono font-black uppercase tracking-wider">
+                <Award className="w-3.5 h-3.5 text-[#FFD733]" />
                 <span>HiFi Top Value Recommendation</span>
               </div>
 
               <div>
-                <h2 className="text-2xl sm:text-3xl font-black text-[#1E1E1E] font-mono">
+                <h2 className="text-xl sm:text-3xl font-black text-[#1E1E1E] font-mono truncate">
                   {bestOffer.hotel_name}
                 </h2>
                 <div className="flex items-center gap-2 mt-1 font-mono text-xs text-[#1E1E1E]/80 font-bold">
@@ -90,14 +90,14 @@ export const OfferComparison: React.FC<OfferComparisonProps> = ({
               </div>
 
               {/* Price Journey Progression: Listed -> CALL-E -> Direct -> Savings */}
-              <div className="p-3.5 rounded-2xl bg-white/70 border border-[#1E1E1E]/20 space-y-2">
+              <div className="p-3 sm:p-3.5 rounded-2xl bg-white/70 border border-[#1E1E1E]/20 space-y-2">
                 <div className="text-[10px] uppercase font-mono tracking-wider text-[#1E1E1E]/70 font-black">
                   Verified Price Progression & Direct Savings
                 </div>
-                <div className="flex flex-wrap items-center gap-3 font-mono text-xs sm:text-sm">
+                <div className="flex flex-wrap items-center gap-2 sm:gap-3 font-mono text-xs sm:text-sm">
                   <div className="p-2 rounded-xl bg-white border border-[#EBECDC]">
-                    <span className="text-[10px] text-slate-500 block uppercase">Online / Listed</span>
-                    <span className="line-through text-slate-500 font-bold">
+                    <span className="text-[9px] sm:text-[10px] text-slate-500 block uppercase">Online Rack</span>
+                    <span className="line-through text-slate-500 font-bold text-xs sm:text-sm">
                       {bestOffer.currency} {(bestOffer.original_total || (bestOffer.negotiated_total ? bestOffer.negotiated_total * 1.1 : 600)).toLocaleString()}
                     </span>
                   </div>
@@ -105,8 +105,8 @@ export const OfferComparison: React.FC<OfferComparisonProps> = ({
                   <span className="text-[#1E1E1E] font-black text-sm">→</span>
 
                   <div className="p-2 rounded-xl bg-[#1E1E1E] text-[#FFD733] border border-[#1E1E1E]">
-                    <span className="text-[10px] text-[#FFD84D] block uppercase font-bold">CALL-E Direct Rate</span>
-                    <span className="font-black text-base">
+                    <span className="text-[9px] sm:text-[10px] text-[#FFD84D] block uppercase font-bold">CALL-E Direct</span>
+                    <span className="font-black text-sm sm:text-base">
                       {bestOffer.currency} {bestOffer.negotiated_total?.toLocaleString() || "—"}
                     </span>
                   </div>
@@ -114,9 +114,9 @@ export const OfferComparison: React.FC<OfferComparisonProps> = ({
                   {bestOffer.negotiated_savings && bestOffer.negotiated_savings > 0 && (
                     <>
                       <span className="text-[#1E1E1E] font-black text-sm">→</span>
-                      <div className="p-2 rounded-xl bg-emerald-700 text-white font-black flex items-center gap-1.5 shadow-xs">
-                        <TrendingDown className="w-4 h-4 text-emerald-200" />
-                        <span>YOU SAVE {bestOffer.currency} {bestOffer.negotiated_savings.toLocaleString()}</span>
+                      <div className="p-2 rounded-xl bg-emerald-700 text-white font-black flex items-center gap-1.5 shadow-xs text-xs sm:text-sm">
+                        <TrendingDown className="w-3.5 h-3.5 text-emerald-200" />
+                        <span>SAVE {bestOffer.currency} {bestOffer.negotiated_savings.toLocaleString()}</span>
                       </div>
                     </>
                   )}
@@ -124,8 +124,8 @@ export const OfferComparison: React.FC<OfferComparisonProps> = ({
               </div>
 
               {/* "Why HiFi Picked This" AI Explainer */}
-              <div className="p-3.5 rounded-2xl bg-[#1E1E1E] text-white space-y-1.5 shadow-md">
-                <div className="flex items-center gap-1.5 text-xs font-mono text-[#FFD733] font-black uppercase tracking-wider">
+              <div className="p-3 sm:p-3.5 rounded-2xl bg-[#1E1E1E] text-white space-y-1.5 shadow-md">
+                <div className="flex items-center gap-1.5 text-[11px] sm:text-xs font-mono text-[#FFD733] font-black uppercase tracking-wider">
                   <Sparkles className="w-3.5 h-3.5 text-[#FFD733]" />
                   <span>Why HiFi Picked This Hotel:</span>
                 </div>
@@ -136,15 +136,15 @@ export const OfferComparison: React.FC<OfferComparisonProps> = ({
             </div>
 
             {/* Quick Action CTA */}
-            <div className="shrink-0 flex flex-col items-center md:items-end gap-2 pt-2">
+            <div className="shrink-0 flex flex-col items-stretch md:items-end gap-1.5 pt-1 w-full md:w-auto">
               <button
                 onClick={() => onSelectOffer(bestOffer)}
-                className="w-full sm:w-auto py-4 px-8 rounded-2xl font-black text-sm bg-[#1E1E1E] hover:bg-black text-[#FFD733] shadow-lg transition-all flex items-center justify-center gap-2 cursor-pointer font-mono"
+                className="w-full md:w-auto py-3.5 sm:py-4 px-6 sm:px-8 rounded-2xl font-black text-sm bg-[#1E1E1E] hover:bg-black text-[#FFD733] shadow-lg transition-all flex items-center justify-center gap-2 cursor-pointer font-mono"
               >
                 <span>Lock In Direct Rate</span>
                 <ArrowRight className="w-4 h-4 text-[#FFD733]" />
               </button>
-              <span className="text-[11px] font-mono text-[#1E1E1E]/70 font-bold">
+              <span className="text-[11px] font-mono text-[#1E1E1E]/70 font-bold text-center md:text-right">
                 Taxes & inclusions verified
               </span>
             </div>
@@ -152,25 +152,152 @@ export const OfferComparison: React.FC<OfferComparisonProps> = ({
         </div>
       )}
 
-      {/* Comparison Matrix Table */}
-      <div className="calle-card rounded-3xl p-6 sm:p-8 relative overflow-hidden bg-white shadow-xl">
-        <div className="flex items-center justify-between pb-6 border-b border-[#EBECDC] mb-6">
+      {/* Comparison Matrix Table & Mobile Cards */}
+      <div className="calle-card rounded-3xl p-4 sm:p-8 relative overflow-hidden bg-white shadow-xl">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-4 sm:pb-6 border-b border-[#EBECDC] mb-4 sm:mb-6 gap-2">
           <div>
-            <h3 className="text-xl font-black text-[#1E1E1E] flex items-center gap-2 font-mono">
+            <h3 className="text-lg sm:text-xl font-black text-[#1E1E1E] flex items-center gap-2 font-mono">
               <Sparkles className="w-5 h-5 text-[#1E1E1E]" />
-              <span>Verified Offer Comparison Matrix</span>
+              <span>Verified Offer Comparison</span>
             </h3>
-            <p className="text-xs text-[#1E1E1E]/70 mt-1 font-medium">
-              Live phone quotes with taxes, fees, and negotiated inclusions. Click any row for details.
+            <p className="text-xs text-[#1E1E1E]/70 mt-0.5 font-medium">
+              Live phone quotes with taxes, fees, and negotiated inclusions.
             </p>
           </div>
-          <span className="text-xs font-mono text-[#1E1E1E] bg-[#FFD733] px-3 py-1 rounded-full font-bold border border-[#EBECDC]">
-            Step 3 of 4: Review & Reserve
+          <span className="text-xs font-mono text-[#1E1E1E] bg-[#FFD733] px-3 py-1 rounded-full font-bold border border-[#EBECDC] self-start sm:self-auto">
+            Step 3 of 4: Review
           </span>
         </div>
 
-        {/* Responsive Table */}
-        <div className="overflow-x-auto">
+        {/* Mobile View: High-Fidelity Cards for Small Screens */}
+        <div className="block md:hidden space-y-3.5">
+          {offers.map((offer) => {
+            const isUnavailable = !offer.available;
+            const isExpanded = expandedOfferId === offer.id;
+
+            return (
+              <div
+                key={offer.id}
+                className={`p-4 rounded-2xl border transition-all ${
+                  offer.is_best_deal
+                    ? "bg-[#FFFDF5] border-[#1E1E1E] shadow-sm ring-1 ring-[#1E1E1E]/20"
+                    : "bg-[#F9F9F0] border-[#EBECDC]"
+                } ${isUnavailable ? "opacity-50" : ""}`}
+              >
+                {/* Header */}
+                <div className="flex items-start justify-between gap-2">
+                  <div>
+                    <div className="flex items-center gap-1.5 flex-wrap">
+                      <h4 className="font-mono font-black text-sm text-[#1E1E1E]">
+                        {offer.hotel_name}
+                      </h4>
+                      {offer.is_best_deal && (
+                        <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-[#FFD733] text-[#1E1E1E] font-black border border-[#1E1E1E]/20">
+                          BEST DEAL
+                        </span>
+                      )}
+                    </div>
+                    <p className="text-xs text-slate-500 font-mono mt-0.5">
+                      {isUnavailable ? "Fully Booked" : offer.room_type || "Deluxe Room"}
+                    </p>
+                  </div>
+
+                  <span className="text-xs font-mono font-black px-2 py-1 rounded-xl bg-[#1E1E1E] text-[#FFD733] shrink-0">
+                    {typeof offer.score === "number" ? offer.score.toFixed(0) : "88"} pts
+                  </span>
+                </div>
+
+                {/* Price & Savings */}
+                <div className="my-3 p-3 rounded-xl bg-white border border-[#EBECDC] flex items-center justify-between">
+                  <div>
+                    <span className="text-[10px] uppercase font-mono text-slate-500 font-bold block">
+                      Direct Rate
+                    </span>
+                    <span className="text-base font-black font-mono text-[#1E1E1E]">
+                      {offer.currency} {offer.negotiated_total?.toLocaleString() || "—"}
+                    </span>
+                  </div>
+
+                  {offer.negotiated_savings && offer.negotiated_savings > 0 ? (
+                    <div className="text-right">
+                      <span className="line-through text-slate-400 font-mono text-xs block">
+                        {offer.original_total?.toLocaleString()}
+                      </span>
+                      <span className="text-emerald-700 font-mono font-bold text-xs">
+                        Save {offer.currency} {offer.negotiated_savings.toLocaleString()}
+                      </span>
+                    </div>
+                  ) : (
+                    <span className="text-[11px] font-mono text-slate-500">Rack Rate</span>
+                  )}
+                </div>
+
+                {/* Key Inclusions */}
+                <div className="flex flex-wrap gap-2 text-xs font-mono mb-3">
+                  <span className="px-2 py-1 rounded-lg bg-white border border-[#EBECDC] text-[#1E1E1E] flex items-center gap-1">
+                    {offer.breakfast_included ? (
+                      <>
+                        <CheckCircle2 className="w-3 h-3 text-emerald-600" />
+                        <span>Breakfast Included</span>
+                      </>
+                    ) : (
+                      <>
+                        <XCircle className="w-3 h-3 text-slate-400" />
+                        <span>Breakfast: +{offer.currency} {offer.breakfast_price || 650}/d</span>
+                      </>
+                    )}
+                  </span>
+                  <span className="px-2 py-1 rounded-lg bg-white border border-[#EBECDC] text-[#1E1E1E] flex items-center gap-1">
+                    {offer.free_cancellation ? (
+                      <>
+                        <CheckCircle2 className="w-3 h-3 text-emerald-600" />
+                        <span>Free Cancellation</span>
+                      </>
+                    ) : (
+                      <>
+                        <HelpCircle className="w-3 h-3 text-slate-400" />
+                        <span>Non-refundable</span>
+                      </>
+                    )}
+                  </span>
+                </div>
+
+                {/* Actions */}
+                <div className="flex items-center gap-2 pt-2 border-t border-[#EBECDC]">
+                  <button
+                    onClick={() => toggleExpand(offer.id)}
+                    className="px-3 py-2 rounded-xl text-xs font-mono font-bold text-slate-600 hover:text-black hover:bg-black/5 transition-colors cursor-pointer"
+                  >
+                    {isExpanded ? "Hide Details" : "Details"}
+                  </button>
+
+                  <button
+                    disabled={isUnavailable}
+                    onClick={() => onSelectOffer(offer)}
+                    className="flex-1 py-2.5 px-4 rounded-xl text-xs font-mono font-black bg-[#FFD733] hover:bg-[#FFEB99] text-[#1E1E1E] border border-[#1E1E1E] shadow-sm transition-all text-center disabled:opacity-40 cursor-pointer"
+                  >
+                    {isUnavailable ? "Unavailable" : "Reserve Direct Rate"}
+                  </button>
+                </div>
+
+                {/* Expanded Details on Mobile */}
+                {isExpanded && (
+                  <div className="mt-3 p-3 rounded-xl bg-white border border-[#EBECDC] text-xs font-mono space-y-2">
+                    <p className="text-slate-700 leading-relaxed">
+                      {offer.offer_notes || "Verified directly from live front desk phone conversation."}
+                    </p>
+                    <div className="text-[11px] text-slate-500 pt-1 border-t border-slate-100">
+                      Cancellation: {offer.cancellation_deadline || "Standard policy"}
+                    </div>
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
+
+        {/* Desktop Responsive Table */}
+        <div className="hidden md:block overflow-x-auto touch-scroll">
           <table className="w-full text-left border-collapse text-xs sm:text-sm">
             <thead>
               <tr className="border-b border-[#EBECDC] text-slate-500 uppercase text-[11px] font-mono font-bold">

@@ -149,31 +149,31 @@ export const ConfirmationView: React.FC<ConfirmationViewProps> = ({
       {/* Boarding Pass Style Voucher */}
       <div className="calle-card rounded-3xl overflow-hidden border-2 border-[#1E1E1E] shadow-2xl relative bg-white">
         {/* Voucher Header in Solid Yellow */}
-        <div className="p-6 sm:p-8 bg-[#FFD733] border-b-2 border-[#1E1E1E] flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div className="p-5 sm:p-8 bg-[#FFD733] border-b-2 border-[#1E1E1E] flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
           <div>
-            <span className="text-[11px] font-mono text-[#1E1E1E] uppercase tracking-widest block mb-1 font-black">
+            <span className="text-[10px] sm:text-[11px] font-mono text-[#1E1E1E] uppercase tracking-widest block mb-1 font-black">
               Official Hotel Reservation Pass
             </span>
-            <h3 className="text-2xl font-black text-[#1E1E1E] font-mono">{booking.hotel_name}</h3>
+            <h3 className="text-xl sm:text-2xl font-black text-[#1E1E1E] font-mono">{booking.hotel_name}</h3>
             <p className="text-xs text-[#1E1E1E]/80 mt-0.5 font-mono font-bold">
               {offer.room_type || "Deluxe Room"}
             </p>
           </div>
 
-          <div className="p-3.5 rounded-2xl bg-white border border-[#1E1E1E] text-right sm:text-right shadow-sm">
+          <div className="p-3 sm:p-3.5 rounded-2xl bg-white border border-[#1E1E1E] text-left sm:text-right shadow-sm self-start sm:self-auto">
             <div className="text-[10px] font-mono text-slate-500 uppercase tracking-wider font-bold">
               Confirmation Code
             </div>
-            <div className="text-xl sm:text-2xl font-black font-mono text-[#1E1E1E] tracking-wider">
+            <div className="text-lg sm:text-2xl font-black font-mono text-[#1E1E1E] tracking-wider">
               {booking.confirmation_number || "HIFI-48291"}
             </div>
           </div>
         </div>
 
         {/* Voucher Body */}
-        <div className="p-6 sm:p-8 space-y-6 bg-white">
+        <div className="p-5 sm:p-8 space-y-5 sm:space-y-6 bg-white">
           {/* Dates & Party Grid */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 p-4 rounded-2xl bg-[#F9F9F0] border border-[#EBECDC] text-xs">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-4 p-3.5 sm:p-4 rounded-2xl bg-[#F9F9F0] border border-[#EBECDC] text-xs">
             <div>
               <div className="text-slate-500 text-[10px] uppercase font-mono tracking-wider flex items-center gap-1 font-bold">
                 <Calendar className="w-3.5 h-3.5 text-[#1E1E1E]" /> Check-in

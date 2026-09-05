@@ -62,46 +62,53 @@ export const RuntimeControlBar: React.FC<RuntimeControlBarProps> = ({ onSettings
   };
 
   return (
-    <div className="w-full bg-[#1A1A1A] text-white border-b border-white/10 px-4 py-2.5 transition-all">
-      <div className="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-4 text-xs font-mono">
-        {/* Left: Mode Indicators & Demo Switch */}
-        <div className="flex flex-wrap items-center gap-3">
-          <div className="flex items-center gap-2 px-2.5 py-1 rounded-xl bg-white/10 border border-white/15">
+    <div className="w-full max-w-full bg-[#1A1A1A] text-white border-b border-white/10 px-3 sm:px-4 py-2 sm:py-2.5 transition-all">
+      <div className="max-w-7xl mx-auto flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 sm:gap-4 text-xs font-mono">
+        {/* Row 1 on mobile / Left on Desktop: Evaluator Tag & Mode Switch */}
+        <div className="flex items-center justify-between sm:justify-start gap-2 sm:gap-3 flex-wrap">
+          <div className="flex items-center gap-1.5 px-2 py-1 rounded-xl bg-white/10 border border-white/15">
             <Sliders className="w-3.5 h-3.5 text-[#FED800]" />
-            <span className="font-bold text-[#FED800]">EVALUATOR CONTROLS:</span>
+            <span className="font-bold text-[#FED800] text-[10px] sm:text-xs">EVALUATOR:</span>
           </div>
 
           {/* Demo Mode Toggle Switch */}
-          <div className="flex items-center gap-2 bg-black/40 px-3 py-1 rounded-xl border border-white/10">
-            <span className="text-white/70">Mode:</span>
+          <div className="flex items-center gap-1.5 sm:gap-2 bg-black/40 px-2.5 py-1 rounded-xl border border-white/10">
+            <span className="text-white/70 text-[10px] sm:text-xs">Mode:</span>
             <button
               onClick={() => saveSettings({ demo_mode: !settings.demo_mode })}
-              className={`px-2.5 py-0.5 rounded-lg font-bold transition-all cursor-pointer text-[11px] flex items-center gap-1.5 ${
+              className={`px-2 py-0.5 rounded-lg font-bold transition-all cursor-pointer text-[10px] sm:text-[11px] flex items-center gap-1.5 ${
                 settings.demo_mode
                   ? "bg-[#FED800] text-black shadow-xs"
                   : "bg-emerald-500 text-white shadow-xs"
               }`}
             >
               <span className={`w-2 h-2 rounded-full ${settings.demo_mode ? "bg-black animate-pulse" : "bg-white animate-pulse"}`} />
-              {settings.demo_mode ? "MODE ● DEMO" : "MODE ● LIVE CALL"}
+              {settings.demo_mode ? "DEMO" : "LIVE CALL"}
             </button>
           </div>
 
-          {/* SQLite DB Status */}
+          {/* Voice Engine Telephony Pill */}
+          <div className="flex items-center gap-1.5 bg-black/40 px-2 py-1 rounded-xl border border-white/10">
+            <Volume2 className="w-3 h-3 text-[#FED800]" />
+            <span className="px-1.5 py-0.5 rounded bg-[#FED800]/20 border border-[#FED800]/40 text-[#FED800] font-bold uppercase text-[10px] sm:text-[11px]">
+              CALL-E
+            </span>
+          </div>
+
+          {/* SQLite DB Status (hidden on mobile) */}
           <div className="hidden lg:flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-white/5 text-white/70 border border-white/10">
             <Database className="w-3.5 h-3.5 text-cyan-400" />
             <span>SQLite:</span>
-            <span className="text-cyan-300 font-bold">hifi.db (Persistent)</span>
+            <span className="text-cyan-300 font-bold">hifi.db</span>
           </div>
         </div>
 
-        {/* Right: Test Phone Input & Telephony Provider */}
-        <div className="flex flex-wrap items-center gap-3">
-          {/* Custom Test Phone Number */}
-          {settings.demo_mode && (
-            <div className="flex items-center gap-1.5 bg-black/40 px-2.5 py-1 rounded-xl border border-white/15">
-              <Phone className="w-3 h-3 text-[#FED800]" />
-              <span className="text-white/60 text-[11px]">Dial To:</span>
+        {/* Row 2 on mobile / Right on Desktop: Test Phone Input */}
+        {settings.demo_mode && (
+          <div className="flex items-center justify-between sm:justify-end gap-2 bg-black/40 px-2.5 py-1.5 rounded-xl border border-white/15 w-full sm:w-auto">
+            <div className="flex items-center gap-1.5 min-w-0 flex-1 sm:flex-initial">
+              <Phone className="w-3 h-3 text-[#FED800] shrink-0" />
+              <span className="text-white/60 text-[10px] sm:text-[11px] shrink-0">Dial To:</span>
               <input
                 type="text"
                 value={phoneInput}
@@ -117,26 +124,17 @@ export const RuntimeControlBar: React.FC<RuntimeControlBarProps> = ({ onSettings
                   }
                 }}
                 placeholder="+15551234567"
-                className="w-32 bg-transparent text-white font-bold text-xs focus:outline-none focus:ring-1 focus:ring-[#FED800] px-1 rounded"
+                className="w-full sm:w-32 bg-transparent text-white font-bold text-xs focus:outline-none focus:ring-1 focus:ring-[#FED800] px-1 rounded"
               />
-              <button
-                onClick={() => saveSettings({ test_phone_number: phoneInput })}
-                className="px-2 py-0.5 rounded-md bg-white/20 hover:bg-[#FED800] hover:text-black font-bold text-[10px] transition-colors cursor-pointer"
-              >
-                {saveSuccess ? <Check className="w-3 h-3 text-emerald-400" /> : "Set"}
-              </button>
             </div>
-          )}
-
-          {/* Voice Engine Telephony */}
-          <div className="flex items-center gap-1.5 bg-black/40 px-2.5 py-1 rounded-xl border border-white/10">
-            <Volume2 className="w-3.5 h-3.5 text-[#FED800]" />
-            <span className="text-white/60 text-[11px]">Telephony:</span>
-            <span className="px-2 py-0.5 rounded-md bg-[#FED800]/20 border border-[#FED800]/40 text-[#FED800] font-bold uppercase text-[11px]">
-              CALL-E
-            </span>
+            <button
+              onClick={() => saveSettings({ test_phone_number: phoneInput })}
+              className="px-2.5 py-0.5 rounded-md bg-white/20 hover:bg-[#FED800] hover:text-black font-bold text-[10px] transition-colors cursor-pointer shrink-0"
+            >
+              {saveSuccess ? <Check className="w-3 h-3 text-emerald-400" /> : "Set"}
+            </button>
           </div>
-        </div>
+        )}
       </div>
     </div>
   );

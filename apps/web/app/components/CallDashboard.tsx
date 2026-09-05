@@ -53,8 +53,8 @@ export const CallDashboard: React.FC<CallDashboardProps> = ({
   return (
     <div className="w-full max-w-4xl mx-auto space-y-6">
       {/* Calling Banner */}
-      <div className="calle-card rounded-3xl p-6 sm:p-8 relative overflow-hidden bg-white shadow-xl">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-[#EBECDC]">
+      <div className="calle-card rounded-3xl p-5 sm:p-8 relative overflow-hidden bg-white shadow-xl">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4 pb-5 sm:pb-6 border-b border-[#EBECDC]">
           <div>
             <div className="flex items-center gap-2 mb-1">
               <span className="relative flex h-2.5 w-2.5">
@@ -64,10 +64,10 @@ export const CallDashboard: React.FC<CallDashboardProps> = ({
                 <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-[#FFD733]" />
               </span>
               <span className="text-xs font-mono uppercase tracking-wider text-[#1E1E1E] font-black">
-                {isAllCompleted ? "All Direct Calls Verified" : "Live Front-Desk Telephony & Verification"}
+                {isAllCompleted ? "All Direct Calls Verified" : "Live Telephony & Verification"}
               </span>
             </div>
-            <h2 className="text-2xl font-black text-[#1E1E1E] font-mono">
+            <h2 className="text-xl sm:text-2xl font-black text-[#1E1E1E] font-mono">
               Direct Hotel Procurement & Negotiation
             </h2>
             <p className="text-xs text-slate-600 mt-1">
@@ -75,16 +75,16 @@ export const CallDashboard: React.FC<CallDashboardProps> = ({
             </p>
           </div>
 
-          <div className="text-right">
+          <div className="text-left sm:text-right">
             <div className="text-xs text-[#1E1E1E]/70 font-mono font-medium">Hotel Verification</div>
-            <div className="text-xl font-black font-mono text-[#1E1E1E]">
+            <div className="text-lg sm:text-xl font-black font-mono text-[#1E1E1E]">
               {completedCount} / {calls.length || totalCalls || 1} Complete
             </div>
           </div>
         </div>
 
         {/* Progress Bar */}
-        <div className="w-full bg-[#F9F9F0] rounded-full h-3 my-6 overflow-hidden border border-[#EBECDC]">
+        <div className="w-full bg-[#F9F9F0] rounded-full h-3 my-5 sm:my-6 overflow-hidden border border-[#EBECDC]">
           <div
             className="bg-[#FFD733] h-3 rounded-full transition-all duration-700 ease-out border border-[#1E1E1E]/20"
             style={{
@@ -114,11 +114,11 @@ export const CallDashboard: React.FC<CallDashboardProps> = ({
                 {/* Header row */}
                 <div
                   onClick={() => toggleExpand(call.id)}
-                  className="p-4 flex items-center justify-between cursor-pointer select-none hover:bg-black/5 transition-colors"
+                  className="p-3.5 sm:p-4 flex flex-col sm:flex-row sm:items-center justify-between cursor-pointer select-none hover:bg-black/5 transition-colors gap-3"
                 >
-                  <div className="flex items-center gap-3.5">
+                  <div className="flex items-center gap-3 min-w-0">
                     <div
-                      className={`w-9 h-9 rounded-xl flex items-center justify-center font-mono text-xs font-black ${
+                      className={`w-9 h-9 rounded-xl flex items-center justify-center font-mono text-xs font-black shrink-0 ${
                         isCalling
                           ? "bg-[#FFD733] text-[#1E1E1E] border border-[#1E1E1E] shadow-sm"
                           : isCompleted
@@ -135,29 +135,29 @@ export const CallDashboard: React.FC<CallDashboardProps> = ({
                       )}
                     </div>
 
-                    <div>
+                    <div className="min-w-0 flex-1">
                       <div className="flex items-center gap-2">
-                        <h3 className="text-sm font-black text-[#1E1E1E]">
+                        <h3 className="text-sm font-black text-[#1E1E1E] truncate">
                           {call.hotel_name}
                         </h3>
                         {call.completion_confidence && (
-                          <span className="text-[10px] font-mono px-1.5 py-0.5 rounded-md bg-[#FFD733] text-[#1E1E1E] border border-[#1E1E1E]/20 font-bold">
+                          <span className="text-[10px] font-mono px-1.5 py-0.5 rounded-md bg-[#FFD733] text-[#1E1E1E] border border-[#1E1E1E]/20 font-bold shrink-0">
                             {Math.round(call.completion_confidence * 100)}% Conf
                           </span>
                         )}
                       </div>
-                      <p className="text-xs text-[#1E1E1E]/70 font-mono font-medium">
+                      <p className="text-xs text-[#1E1E1E]/70 font-mono font-medium truncate">
                         {call.phone_number || "Direct Hotel Trunk"} • {call.purpose.replace("_", " ")}
                       </p>
                     </div>
                   </div>
 
                   {/* Status pill, Transcript Button & Waveform */}
-                  <div className="flex items-center gap-2.5 flex-wrap">
+                  <div className="flex items-center justify-between sm:justify-end gap-2 sm:gap-2.5 flex-wrap pt-1 sm:pt-0 border-t sm:border-t-0 border-[#EBECDC]/60">
                     {isCalling && <AudioWaveVisualizer active={true} />}
 
                     <span
-                      className={`px-3 py-1 rounded-xl text-xs font-mono font-bold flex items-center gap-1.5 ${
+                      className={`px-2.5 sm:px-3 py-1 rounded-xl text-xs font-mono font-bold flex items-center gap-1.5 ${
                         isCalling
                           ? "bg-[#FFD733] text-[#1E1E1E] border border-[#1E1E1E] animate-pulse"
                           : isCompleted
@@ -304,13 +304,13 @@ export const CallDashboard: React.FC<CallDashboardProps> = ({
 
         {/* CTA when all completed */}
         {isAllCompleted && onViewOffers && (
-          <div className="mt-8 pt-6 border-t border-[#EBECDC] flex justify-end">
+          <div className="mt-6 sm:mt-8 pt-5 sm:pt-6 border-t border-[#EBECDC] flex justify-end">
             <button
               onClick={onViewOffers}
-              className="py-4 px-8 rounded-2xl font-black text-sm bg-[#FFD733] hover:bg-[#FFEB99] text-[#1E1E1E] border-2 border-[#1E1E1E] shadow-[0_4px_0_#1E1E1E] active:translate-y-1 active:shadow-none transition-all flex items-center gap-2 cursor-pointer font-mono"
+              className="w-full sm:w-auto py-4 px-6 sm:px-8 rounded-2xl font-black text-xs sm:text-sm bg-[#FFD733] hover:bg-[#FFEB99] text-[#1E1E1E] border-2 border-[#1E1E1E] shadow-[0_4px_0_#1E1E1E] active:translate-y-1 active:shadow-none transition-all flex items-center justify-center gap-2 cursor-pointer font-mono"
             >
-              <Sparkles className="w-4 h-4" />
-              Compare Verified Offers & Savings ({calls.filter(c => c.status === "completed").length} Ready)
+              <Sparkles className="w-4 h-4 shrink-0" />
+              <span>Compare Offers & Savings ({calls.filter(c => c.status === "completed").length} Ready)</span>
             </button>
           </div>
         )}

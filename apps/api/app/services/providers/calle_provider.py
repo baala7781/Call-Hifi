@@ -126,7 +126,12 @@ class CalleProvider(BaseCallProvider):
         configured_test_phone = get_test_phone_number()
 
         if demo_active:
-            raw_phone = configured_test_phone or hotel.phone_number
+            raw_phone = configured_test_phone
+            if not raw_phone:
+                logger.warning(
+                    f"⚠️ [DEMO MODE SAFETY] No test phone number configured for [{hotel.name}]. "
+                    "Refusing to dial actual hotel trunk. Falling back to simulation."
+                )
         else:
             raw_phone = hotel.phone_number or configured_test_phone
 
@@ -332,7 +337,12 @@ class CalleProvider(BaseCallProvider):
         configured_test_phone = get_test_phone_number()
 
         if demo_active:
-            raw_phone = configured_test_phone or hotel.phone_number
+            raw_phone = configured_test_phone
+            if not raw_phone:
+                logger.warning(
+                    f"⚠️ [DEMO MODE SAFETY] No test phone number configured for confirmation call to [{hotel.name}]. "
+                    "Refusing to dial actual hotel trunk. Falling back to simulation."
+                )
         else:
             raw_phone = hotel.phone_number or configured_test_phone
 

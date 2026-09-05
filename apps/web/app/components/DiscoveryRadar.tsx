@@ -104,23 +104,23 @@ export const DiscoveryRadar: React.FC<DiscoveryRadarProps> = ({
         </div>
 
         {/* Funnel Stats */}
-        <div className="grid grid-cols-3 gap-3 my-6 text-center">
-          <div className="p-3.5 rounded-2xl bg-[#F9F9F0] border border-[#EBECDC]">
-            <div className="text-2xl font-black text-[#1E1E1E] font-mono">{discoveredCount || candidates.length}</div>
-            <div className="text-xs text-[#1E1E1E]/70 mt-1 font-mono font-medium">Discovered Places</div>
+        <div className="grid grid-cols-3 gap-2 sm:gap-3 my-5 sm:my-6 text-center">
+          <div className="p-2.5 sm:p-3.5 rounded-2xl bg-[#F9F9F0] border border-[#EBECDC]">
+            <div className="text-xl sm:text-2xl font-black text-[#1E1E1E] font-mono">{discoveredCount || candidates.length}</div>
+            <div className="text-[10px] sm:text-xs text-[#1E1E1E]/70 mt-0.5 sm:mt-1 font-mono font-medium">Discovered</div>
           </div>
-          <div className="p-3.5 rounded-2xl bg-[#F9F9F0] border border-[#EBECDC]">
-            <div className="text-2xl font-black text-[#1E1E1E] font-mono">{eligibleCount || candidates.length}</div>
-            <div className="text-xs text-[#1E1E1E]/70 mt-1 font-mono font-medium">Eligible Verified</div>
+          <div className="p-2.5 sm:p-3.5 rounded-2xl bg-[#F9F9F0] border border-[#EBECDC]">
+            <div className="text-xl sm:text-2xl font-black text-[#1E1E1E] font-mono">{eligibleCount || candidates.length}</div>
+            <div className="text-[10px] sm:text-xs text-[#1E1E1E]/70 mt-0.5 sm:mt-1 font-mono font-medium">Eligible</div>
           </div>
-          <div className="p-3.5 rounded-2xl bg-[#FFD733] border border-[#1E1E1E]/20 shadow-sm">
-            <div className="text-2xl font-black text-[#1E1E1E] font-mono">{selectedIds.size}</div>
-            <div className="text-xs text-[#1E1E1E] mt-1 font-mono font-bold">Selected for Calls</div>
+          <div className="p-2.5 sm:p-3.5 rounded-2xl bg-[#FFD733] border border-[#1E1E1E]/20 shadow-sm">
+            <div className="text-xl sm:text-2xl font-black text-[#1E1E1E] font-mono">{selectedIds.size}</div>
+            <div className="text-[10px] sm:text-xs text-[#1E1E1E] mt-0.5 sm:mt-1 font-mono font-bold">Selected</div>
           </div>
         </div>
 
         {/* Filter & Selection Control Bar */}
-        <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 p-3 rounded-2xl bg-[#F9F9F0] border border-[#EBECDC]">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2.5 p-2.5 sm:p-3 rounded-2xl bg-[#F9F9F0] border border-[#EBECDC]">
           <div className="relative flex-1">
             <Search className="w-4 h-4 text-black/40 absolute left-3 top-1/2 -translate-y-1/2" />
             <input
@@ -128,20 +128,20 @@ export const DiscoveryRadar: React.FC<DiscoveryRadarProps> = ({
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Filter by hotel name or location..."
-              className="w-full pl-9 pr-4 py-2 rounded-xl bg-white border border-[#EBECDC] text-xs font-mono text-[#1E1E1E] focus:outline-none focus:ring-1 focus:ring-[#1E1E1E]"
+              className="w-full pl-9 pr-3 py-2 rounded-xl bg-white border border-[#EBECDC] text-xs font-mono text-[#1E1E1E] focus:outline-none focus:ring-1 focus:ring-[#1E1E1E]"
             />
           </div>
 
-          <div className="flex items-center gap-2 text-xs font-mono">
+          <div className="flex items-center justify-end gap-2 text-xs font-mono shrink-0">
             <button
               onClick={selectAll}
-              className="px-2.5 py-1.5 rounded-xl bg-white hover:bg-black/5 border border-[#EBECDC] font-bold text-[#1E1E1E] transition-colors cursor-pointer"
+              className="flex-1 sm:flex-none px-3 py-2 sm:py-1.5 rounded-xl bg-white hover:bg-black/5 border border-[#EBECDC] font-bold text-[#1E1E1E] transition-colors cursor-pointer text-center"
             >
               Select All
             </button>
             <button
               onClick={deselectAll}
-              className="px-2.5 py-1.5 rounded-xl bg-white hover:bg-black/5 border border-[#EBECDC] text-[#1E1E1E]/70 transition-colors cursor-pointer"
+              className="flex-1 sm:flex-none px-3 py-2 sm:py-1.5 rounded-xl bg-white hover:bg-black/5 border border-[#EBECDC] text-[#1E1E1E]/70 transition-colors cursor-pointer text-center"
             >
               Clear
             </button>

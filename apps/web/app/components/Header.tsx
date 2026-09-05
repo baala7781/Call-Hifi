@@ -88,17 +88,17 @@ export const Header: React.FC<HeaderProps> = ({
         </div>
 
         {/* Right CTA Buttons & User State */}
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-1.5 sm:gap-3 shrink-0">
           {/* Authenticated Evaluator Badge */}
           {userEmail && (
-            <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/70 backdrop-blur-md border border-black/10 text-xs font-mono text-[#1A1A1A]">
-              <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
-              <span className="max-w-[120px] truncate font-bold">{userEmail}</span>
+            <div className="flex items-center gap-1 px-2 sm:px-3 py-1.5 rounded-xl bg-white/70 backdrop-blur-md border border-black/10 text-xs font-mono text-[#1A1A1A] max-w-[120px] sm:max-w-none">
+              <ShieldCheck className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+              <span className="truncate font-bold max-w-[60px] sm:max-w-[120px]">{userEmail}</span>
               {onLogout && (
                 <button
                   onClick={onLogout}
                   title="Sign out"
-                  className="ml-1 text-black/40 hover:text-black transition-colors cursor-pointer"
+                  className="ml-0.5 text-black/40 hover:text-black transition-colors cursor-pointer shrink-0"
                 >
                   <LogOut className="w-3 h-3" />
                 </button>
@@ -124,14 +124,15 @@ export const Header: React.FC<HeaderProps> = ({
             </div>
           )}
 
-          {/* GitHub White Pill Button */}
+          {/* GitHub Pill Button (hidden on mobile, visible on tablet/desktop) */}
           <a
             href="https://github.com/CALLE-AI"
             target="_blank"
             rel="noopener noreferrer"
-            className="calle-btn-white px-3.5 py-2 text-xs font-mono uppercase flex items-center gap-1.5 cursor-pointer"
+            className="hidden sm:flex calle-btn-white px-3 py-2 text-xs font-mono uppercase items-center gap-1.5 cursor-pointer"
+            title="View on GitHub"
           >
-            <span>GITHUB</span>
+            <span className="hidden md:inline">GITHUB</span>
             <Code2 className="w-3.5 h-3.5" />
           </a>
 
@@ -139,20 +140,22 @@ export const Header: React.FC<HeaderProps> = ({
           {onOpenHistory && (
             <button
               onClick={onOpenHistory}
-              className="calle-btn-white px-3.5 py-2 text-xs font-mono uppercase flex items-center gap-1.5 cursor-pointer"
+              className="calle-btn-white px-2.5 sm:px-3.5 py-2 text-xs font-mono uppercase flex items-center gap-1.5 cursor-pointer"
+              title="View Trip History"
             >
-              <span>HISTORY</span>
               <Clock className="w-3.5 h-3.5" />
+              <span className="hidden sm:inline">HISTORY</span>
             </button>
           )}
 
           {/* Logs / Inspector Pill */}
           <button
             onClick={onOpenDebug}
-            className="calle-btn-black px-4 py-2 text-xs font-mono uppercase flex items-center gap-1.5 cursor-pointer"
+            className="calle-btn-black px-2.5 sm:px-4 py-2 text-xs font-mono uppercase flex items-center gap-1.5 cursor-pointer"
+            title="Inspect CALL-E Realtime Logs"
           >
-            <span>LOGS</span>
             <Terminal className="w-3.5 h-3.5" />
+            <span className="hidden sm:inline">LOGS</span>
           </button>
         </div>
       </div>

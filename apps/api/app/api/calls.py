@@ -146,6 +146,11 @@ async def start_calls(
 
     for idx, hotel in enumerate(target_candidates):
         if is_demo:
+            if not test_phone or not test_phone.strip():
+                raise HTTPException(
+                    status_code=400,
+                    detail="In Demo Mode, a test phone number is required so CALL-E calls your phone instead of the actual hotel. Please set your phone number in Evaluator Controls.",
+                )
             target_phone = sanitize_phone_e164(test_phone)
         else:
             target_phone = sanitize_phone_e164(hotel.phone_number or test_phone)
